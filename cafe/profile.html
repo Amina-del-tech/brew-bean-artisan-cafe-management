@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — Brew & Bean</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    .profile-page { background:var(--cream); min-height:calc(100vh - 72px); padding:48px 0 80px; }
+    [data-theme="dark"] .profile-page { background:var(--warm-white); }
+    .profile-grid { display:grid; grid-template-columns:280px 1fr; gap:28px; align-items:start; }
+    /* Sidebar */
+    .profile-sidebar { background:var(--foam); border-radius:20px; overflow:hidden; box-shadow:var(--shadow-sm); position:sticky; top:100px; }
+    [data-theme="dark"] .profile-sidebar { background:var(--roast); }
+    .profile-sidebar-top { background:linear-gradient(135deg,var(--caramel),var(--rust)); padding:32px 24px; text-align:center; position:relative; }
+    .profile-sidebar-avatar { width:88px; height:88px; border-radius:50%; border:4px solid rgba(255,255,255,0.4); margin:0 auto 12px; overflow:hidden; position:relative; cursor:pointer; }
+    .profile-sidebar-avatar img { width:100%; height:100%; object-fit:cover; }
+    .avatar-edit-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s; border-radius:50%; font-size:1.2rem; }
+    .profile-sidebar-avatar:hover .avatar-edit-overlay { opacity:1; }
+    .profile-sidebar-name { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:white; margin-bottom:4px; }
+    .profile-sidebar-email { font-size:0.78rem; color:rgba(255,255,255,0.75); margin-bottom:12px; }
+    .profile-tier-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.2); border-radius:50px; padding:5px 14px; font-size:0.75rem; font-weight:700; color:white; }
+    .profile-nav { padding:12px; }
+    .profile-nav-link { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; font-size:0.88rem; font-weight:500; color:var(--brown); cursor:pointer; transition:all 0.2s; text-decoration:none; }
+    [data-theme="dark"] .profile-nav-link { color:var(--latte); }
+    .profile-nav-link:hover { background:rgba(192,124,58,0.08); color:var(--caramel); }
+    .profile-nav-link.active { background:rgba(192,124,58,0.1); color:var(--caramel); font-weight:600; }
+    .profile-nav-icon { width:34px; height:34px; border-radius:9px; background:rgba(192,124,58,0.08); display:flex; align-items:center; justify-content:center; font-size:0.95rem; }
+    /* Content Panels */
+    .profile-panel { display:none; }
+    .profile-panel.active { display:block; }
+    .panel-card { background:var(--foam); border-radius:20px; padding:32px; box-shadow:var(--shadow-sm); margin-bottom:20px; }
+    [data-theme="dark"] .panel-card { background:var(--roast); }
+    .panel-card-title { font-family:var(--font-display); font-size:1.1rem; font-weight:700; margin-bottom:6px; }
+    .panel-card-sub { font-size:0.83rem; color:var(--brown); margin-bottom:24px; }
+    [data-theme="dark"] .panel-card-sub { color:var(--latte); }
+    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .save-btn { padding:12px 28px; background:var(--caramel); color:white; border-radius:12px; font-size:0.9rem; font-weight:700; border:none; cursor:pointer; font-family:var(--font-body); transition:all 0.25s; }
+    .save-btn:hover { background:var(--rust); transform:translateY(-1px); }
+    /* Preferences toggles */
+    .pref-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(192,124,58,0.08); }
+    .pref-row:last-child { border-bottom:none; }
+    .pref-info strong { display:block; font-size:0.9rem; color:var(--espresso); margin-bottom:2px; }
+    [data-theme="dark"] .pref-info strong { color:var(--cream); }
+    .pref-info span { font-size:0.78rem; color:var(--brown); }
+    [data-theme="dark"] .pref-info span { color:var(--latte); }
+    .toggle-switch { width:46px; height:24px; border-radius:12px; background:rgba(192,124,58,0.2); position:relative; cursor:pointer; transition:background 0.3s; flex-shrink:0; border:none; }
+    .toggle-switch.on { background:var(--caramel); }
+    .toggle-switch::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:white; top:3px; left:3px; transition:left 0.3s; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+    .toggle-switch.on::after { left:25px; }
+    /* Danger zone */
+    .danger-zone { background:rgba(229,62,62,0.05); border:1px solid rgba(229,62,62,0.15); border-radius:16px; padding:24px; }
+    .danger-title { font-size:0.9rem; font-weight:700; color:#e53e3e; margin-bottom:6px; }
+    .danger-desc { font-size:0.82rem; color:var(--brown); margin-bottom:16px; }
+    [data-theme="dark"] .danger-desc { color:var(--latte); }
+    .danger-btn { padding:10px 20px; background:rgba(229,62,62,0.1); color:#e53e3e; border:1px solid rgba(229,62,62,0.2); border-radius:10px; font-size:0.85rem; font-weight:600; cursor:pointer; font-family:var(--font-body); transition:all 0.2s; }
+    .danger-btn:hover { background:rgba(229,62,62,0.2); }
+    /* Activity log */
+    .activity-log-item { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid rgba(192,124,58,0.07); }
+    .activity-log-item:last-child { border-bottom:none; }
+    .log-icon { width:34px; height:34px; border-radius:10px; background:rgba(192,124,58,0.08); display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
+    .log-text { font-size:0.84rem; color:var(--charcoal); margin-bottom:3px; }
+    [data-theme="dark"] .log-text { color:var(--cream); }
+    .log-time { font-size:0.73rem; color:var(--brown); }
+    [data-theme="dark"] .log-time { color:var(--latte); }
+  </style>
+</head>
+<body>
+<div id="pageLoader"><div class="loader-cup"><i class="fas fa-mug-saucer"></i></div><div class="loader-bar"><div class="loader-fill"></div></div><div class="loader-text">LOADING PROFILE</div></div>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="orders.html" class="nav-link">Orders</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+        <a href="customer-dashboard.html" class="btn btn-primary btn-sm">Dashboard</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a><a href="menu.html" class="nav-link">Menu</a>
+  <a href="orders.html" class="nav-link">Orders</a><a href="contact.html" class="nav-link">Contact</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>My Profile</h1>
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><a href="customer-dashboard.html">Account</a><span>›</span><span>Profile</span></div>
+  </div>
+</div>
+
+<section class="profile-page">
+  <div class="container">
+    <div class="profile-grid">
+      <!-- Sidebar -->
+      <div class="profile-sidebar reveal">
+        <div class="profile-sidebar-top">
+          <div class="profile-sidebar-avatar">
+            <div id="profileAvatar" style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#c07c3a,#c4521a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1.4rem;"></div>
+            <div class="avatar-edit-overlay"><i class="fas fa-pen"></i></div>
+          </div>
+          <div class="profile-sidebar-name" id="sidebarName">...</div>
+          <div class="profile-sidebar-email" id="sidebarEmail">...</div>
+          <div class="profile-tier-badge" id="sidebarTier"><i class="fas fa-star"></i> Member</div>
+        </div>
+        <div class="profile-nav">
+          <a class="profile-nav-link active" onclick="switchPanel('personal', this)">
+            <div class="profile-nav-icon"><i class="fas fa-user"></i></div> Personal Info
+          </a>
+          <a class="profile-nav-link" onclick="switchPanel('security', this)">
+            <div class="profile-nav-icon"><i class="fas fa-lock"></i></div> Security
+          </a>
+          <a class="profile-nav-link" onclick="switchPanel('preferences', this)">
+            <div class="profile-nav-icon"><i class="fas fa-gear"></i></div> Preferences
+          </a>
+          <a class="profile-nav-link" onclick="switchPanel('addresses', this)">
+            <div class="profile-nav-icon"><i class="fas fa-location-dot"></i></div> Addresses
+          </a>
+          <a class="profile-nav-link" onclick="switchPanel('activity', this)">
+            <div class="profile-nav-icon"><i class="fas fa-clipboard-list"></i></div> Activity Log
+          </a>
+          <a href="index.html" class="profile-nav-link" style="color:#e53e3e;margin-top:8px;">
+            <div class="profile-nav-icon" style="background:rgba(229,62,62,0.08);"><i class="fas fa-door-open"></i></div> Sign Out
+          </a>
+        </div>
+      </div>
+
+      <!-- Panels -->
+      <div class="reveal delay-2">
+        <!-- Personal Info -->
+        <div class="profile-panel active" id="panel-personal">
+          <div class="panel-card">
+            <div class="panel-card-title">Personal Information</div>
+            <div class="panel-card-sub">Update your name, phone and profile photo</div>
+            <div class="form-row-2">
+              <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-input" id="firstName"></div>
+              <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input" id="lastName"></div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="phoneInput"></div>
+              <div class="form-group"><label class="form-label">Birthday</label><input type="date" class="form-input" id="birthdayInput"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="emailInput" readonly></div>
+            <div class="form-group"><label class="form-label">Bio (optional)</label><textarea class="form-textarea" rows="3" id="bioInput" placeholder="Tell us something about yourself..."></textarea></div>
+            <div style="display:flex;gap:10px;"><button class="save-btn" onclick="saveProfile()">Save Changes</button><button class="btn btn-outline btn-sm" style="border-radius:12px;">Discard</button></div>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="profile-panel" id="panel-security">
+          <div class="panel-card">
+            <div class="panel-card-title">Change Password</div>
+            <div class="panel-card-sub">Use a strong password you don't use elsewhere</div>
+            <div class="form-group"><label class="form-label">Current Password</label><input type="password" class="form-input" placeholder="••••••••"></div>
+            <div class="form-group"><label class="form-label">New Password</label><input type="password" class="form-input" placeholder="Min 6 characters"></div>
+            <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password" class="form-input" placeholder="Repeat new password"></div>
+            <button class="save-btn" onclick="showToast('Password updated successfully!','success','<i class='fas fa-lock'></i>')">Update Password</button>
+          </div>
+          <div class="panel-card">
+            <div class="panel-card-title">Two-Factor Authentication</div>
+            <div class="panel-card-sub">Add an extra layer of security to your account</div>
+            <div class="pref-row">
+              <div class="pref-info"><strong>SMS Authentication</strong><span>Receive a code via SMS on login</span></div>
+              <button class="toggle-switch on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="pref-row">
+              <div class="pref-info"><strong>Email Authentication</strong><span>Receive a code via email on login</span></div>
+              <button class="toggle-switch" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+          <div class="danger-zone">
+            <div class="danger-title"><i class="fas fa-triangle-exclamation"></i> Danger Zone</div>
+            <div class="danger-desc">Permanently delete your account and all associated data. This action is irreversible.</div>
+            <button class="danger-btn" onclick="if(confirm('Are you sure? This cannot be undone.')) showToast('Account deletion requested','info','<i class='fas fa-trash'></i>')">Delete My Account</button>
+          </div>
+        </div>
+
+        <!-- Preferences -->
+        <div class="profile-panel" id="panel-preferences">
+          <div class="panel-card">
+            <div class="panel-card-title">Notification Preferences</div>
+            <div class="panel-card-sub">Choose what you'd like to hear about</div>
+            <div class="pref-row"><div class="pref-info"><strong>Order Updates</strong><span>Get notified when your order status changes</span></div><button class="toggle-switch on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="pref-row"><div class="pref-info"><strong>Promotions & Offers</strong><span>Special deals, discounts and seasonal menus</span></div><button class="toggle-switch on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="pref-row"><div class="pref-info"><strong>Loyalty Points</strong><span>Notifications when you earn or redeem points</span></div><button class="toggle-switch on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="pref-row"><div class="pref-info"><strong>New Menu Items</strong><span>Be first to know about new additions</span></div><button class="toggle-switch" onclick="this.classList.toggle('on')"></button></div>
+            <div class="pref-row"><div class="pref-info"><strong>Reservation Reminders</strong><span>Reminder 1 hour before your booking</span></div><button class="toggle-switch on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-card-title">App Preferences</div>
+            <div class="panel-card-sub">Customise your Brew & Bean experience</div>
+            <div class="pref-row"><div class="pref-info"><strong>Dark Mode</strong><span>Use dark theme across the site</span></div><button class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode(this)"></button></div>
+            <div class="pref-row"><div class="pref-info"><strong>Save Cart Across Sessions</strong><span>Keep your cart items when you close the browser</span></div><button class="toggle-switch on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="pref-row"><div class="pref-info"><strong>Newsletter</strong><span>Monthly brewing tips and cafe news</span></div><button class="toggle-switch" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+        </div>
+
+        <!-- Addresses -->
+        <div class="profile-panel" id="panel-addresses">
+          <div class="panel-card">
+            <div class="panel-card-title">Saved Addresses</div>
+            <div class="panel-card-sub">Manage your delivery addresses</div>
+            <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+              <div style="border:2px solid var(--caramel);border-radius:14px;padding:16px;position:relative;">
+                <span style="position:absolute;top:12px;right:12px;font-size:0.7rem;background:var(--caramel);color:white;padding:3px 10px;border-radius:50px;font-weight:700;">Default</span>
+                <div style="font-weight:600;margin-bottom:4px;"><i class="fas fa-house"></i> Home</div>
+                <div style="font-size:0.85rem;color:var(--brown);">House 12, Street 5, DHA Phase 5, Lahore 54000</div>
+                <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-outline btn-sm">Edit</button><button class="btn btn-outline btn-sm" style="color:#e53e3e;border-color:rgba(229,62,62,0.3);">Remove</button></div>
+              </div>
+              <div style="border:1px solid rgba(192,124,58,0.15);border-radius:14px;padding:16px;">
+                <div style="font-weight:600;margin-bottom:4px;"><i class="fas fa-briefcase"></i> Office</div>
+                <div style="font-size:0.85rem;color:var(--brown);">Office 301, Arfa Tower, Ferozpur Road, Lahore</div>
+                <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-outline btn-sm">Edit</button><button class="btn btn-outline btn-sm" style="color:#e53e3e;border-color:rgba(229,62,62,0.3);">Remove</button></div>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="showToast('Address form coming soon!','info','<i class='fas fa-location-dot'></i>')">+ Add New Address</button>
+          </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="profile-panel" id="panel-activity">
+          <div class="panel-card">
+            <div class="panel-card-title">Recent Activity</div>
+            <div class="panel-card-sub">Your last 10 account actions</div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-cart-shopping"></i></div><div><div class="log-text">Order #ORD-2841 placed — Rs. 1,280</div><div class="log-time">Today, 7:42 PM</div></div></div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-star"></i></div><div><div class="log-text">Earned 64 loyalty points from order</div><div class="log-time">Today, 7:42 PM</div></div></div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-key"></i></div><div><div class="log-text">Signed in from Chrome · Lahore, PK</div><div class="log-time">Today, 7:38 PM</div></div></div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-calendar-days"></i></div><div><div class="log-text">Reservation #RES-401 confirmed for 4 guests</div><div class="log-time">Yesterday, 3:10 PM</div></div></div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-cart-shopping"></i></div><div><div class="log-text">Order #ORD-2820 placed — Rs. 1,240</div><div class="log-time">May 8, 6:15 PM</div></div></div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-heart"></i></div><div><div class="log-text">Added Tiramisu Jar to favourites</div><div class="log-time">May 8, 5:50 PM</div></div></div>
+            <div class="activity-log-item"><div class="log-icon"><i class="fas fa-user"></i></div><div><div class="log-text">Profile photo updated</div><div class="log-time">May 5, 11:20 AM</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#1a0a00;color:#f5ead6;padding:40px 0 24px;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+      <div class="nav-logo"><div class="logo-icon"><i class="fas fa-mug-saucer"></i></div><div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div></div>
+      <div style="display:flex;gap:16px;"><a href="index.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Home</a><a href="menu.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Menu</a></div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;text-align:center;color:rgba(245,234,214,0.3);font-size:0.8rem;">© 2026 Brew & Bean Artisan Cafe. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  // ===== AUTH GUARD + LOAD USER DATA =====
+  (function() {
+    const raw = sessionStorage.getItem('bb_user');
+    if (!raw) { window.location.replace('login.html'); return; }
+    const user = JSON.parse(raw);
+
+    // Dashboard link role ke hisaab se
+    const dashLink = document.querySelector('a[href="customer-dashboard.html"]');
+    if (dashLink && (user.role === 'staff' || user.role === 'admin')) {
+      dashLink.href = 'staff-dashboard.html';
+    }
+
+    function getInitials(name) {
+      return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    function getTier(pts) {
+      if (pts >= 2000) return 'Platinum <i class="fas fa-gem"></i>';
+      if (pts >= 1000) return 'Gold <i class="fas fa-star"></i>';
+      return 'Silver <i class="fas fa-medal"></i>';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set avatar initials
+      document.getElementById('profileAvatar').textContent = getInitials(user.name);
+
+      // Set sidebar info
+      document.getElementById('sidebarName').textContent = user.name;
+      document.getElementById('sidebarEmail').textContent = user.email;
+
+      // Set form fields
+      const nameParts = user.name.split(' ');
+      document.getElementById('firstName').value = nameParts[0] || '';
+      document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+      document.getElementById('emailInput').value = user.email;
+      document.getElementById('phoneInput').value = user.phone || '';
+
+      // Load orders to calculate points & tier
+      fetch('api/get_orders.php?user_id=' + user.id)
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            const totalSpent = data.orders.reduce((sum, o) => sum + parseFloat(o.total), 0);
+            const pts = Math.floor(totalSpent / 10);
+            const tier = getTier(pts);
+            document.getElementById('sidebarTier').innerHTML = tier + ' · ' + pts.toLocaleString() + ' pts';
+          }
+        })
+        .catch(() => {});
+
+      // Dark mode sync
+      const saved = localStorage.getItem('bb_theme');
+      if (saved === 'dark') {
+        const btn = document.getElementById('darkModeToggle');
+        if (btn) btn.classList.add('on');
+      }
+    });
+  })();
+
+  function switchPanel(id, link) {
+    document.querySelectorAll('.profile-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.profile-nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    link.classList.add('active');
+  }
+
+  function saveProfile() {
+    const user = JSON.parse(sessionStorage.getItem('bb_user'));
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const phone     = document.getElementById('phoneInput').value.trim();
+
+    if (firstName) {
+      user.name  = firstName + (lastName ? ' ' + lastName : '');
+      user.phone = phone;
+      sessionStorage.setItem('bb_user', JSON.stringify(user));
+
+      // Update sidebar
+      document.getElementById('sidebarName').textContent = user.name;
+      document.getElementById('profileAvatar').textContent = user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    }
+    showToast('Profile saved successfully!', 'success', '<i class="fas fa-circle-check"></i>');
+  }
+
+  function toggleDarkMode(btn) {
+    btn.classList.toggle('on');
+    const theme = btn.classList.contains('on') ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('bb_theme', theme);
+    document.querySelectorAll('.theme-toggle').forEach(t => t.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>');
+  }
+</script>
+</body>
+</html>

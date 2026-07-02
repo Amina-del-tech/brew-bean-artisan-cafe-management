@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — Brew & Bean</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    .orders-page {
+      background: var(--cream);
+      min-height: calc(100vh - 72px);
+      padding: 48px 0 80px;
+    }
+
+    [data-theme="dark"] .orders-page {
+      background: var(--warm-white);
+    }
+
+    .orders-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .orders-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .orders-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .status-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--foam);
+      border-radius: 12px;
+      padding: 4px;
+      border: 1px solid rgba(192, 124, 58, 0.1);
+    }
+
+    [data-theme="dark"] .status-tabs {
+      background: var(--roast);
+    }
+
+    .status-tab {
+      padding: 8px 18px;
+      border-radius: 9px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--brown);
+      font-family: var(--font-body);
+      transition: all 0.2s;
+    }
+
+    [data-theme="dark"] .status-tab {
+      color: var(--latte);
+    }
+
+    .status-tab.active {
+      background: var(--caramel);
+      color: white;
+    }
+
+    .order-card-full {
+      background: var(--foam);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+      border: 1px solid rgba(192, 124, 58, 0.08);
+      transition: all 0.25s;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    [data-theme="dark"] .order-card-full {
+      background: var(--roast);
+    }
+
+    .order-card-full:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(192, 124, 58, 0.2);
+    }
+
+    .ocf-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ocf-id {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--caramel);
+    }
+
+    .ocf-date {
+      font-size: 0.8rem;
+      color: var(--brown);
+    }
+
+    [data-theme="dark"] .ocf-date {
+      color: var(--latte);
+    }
+
+    .ocf-items {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .ocf-item-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cream);
+      border-radius: 10px;
+      padding: 8px 12px;
+      border: 1px solid rgba(192, 124, 58, 0.1);
+    }
+
+    [data-theme="dark"] .ocf-item-chip {
+      background: var(--latte);
+    }
+
+    .ocf-chip-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: rgba(192,124,58,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--caramel);
+      font-size: 0.95rem;
+    }
+
+    .ocf-chip-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ocf-chip-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .ocf-chip-qty {
+      font-size: 0.75rem;
+      color: var(--caramel);
+    }
+
+    .ocf-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ocf-total {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--caramel);
+    }
+
+    .ocf-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .track-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 16px 0;
+    }
+
+    .track-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .track-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(192, 124, 58, 0.2);
+      background: var(--foam);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.3s;
+    }
+
+    [data-theme="dark"] .track-dot {
+      background: var(--roast);
+    }
+
+    .track-dot.done {
+      background: var(--caramel);
+      border-color: var(--caramel);
+      color: white;
+    }
+
+    .track-dot.active {
+      background: rgba(192, 124, 58, 0.15);
+      border-color: var(--caramel);
+    }
+
+    .track-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(192, 124, 58, 0.15);
+      margin-top: -20px;
+    }
+
+    .track-line.done {
+      background: var(--caramel);
+    }
+
+    .track-label {
+      font-size: 0.68rem;
+      color: var(--brown);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    [data-theme="dark"] .track-label {
+      color: var(--latte);
+    }
+
+    .empty-orders {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-orders-icon {
+      font-size: 4rem;
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="pageLoader">
+    <div class="loader-cup"><i class="fas fa-mug-saucer"></i></div>
+    <div class="loader-bar">
+      <div class="loader-fill"></div>
+    </div>
+    <div class="loader-text">LOADING ORDERS</div>
+  </div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <div class="navbar-inner">
+        <a href="index.html" class="nav-logo">
+          <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+          <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan
+              Cafe</span></div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="menu.html" class="nav-link">Menu</a></li>
+          <li><a href="orders.html" class="nav-link active">Orders</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+          <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+          <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+          <div id="navAuthBtn"></div>
+        </div>
+        <button class="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-nav">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="menu.html" class="nav-link">Menu</a>
+    <a href="orders.html" class="nav-link">Orders</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+  </div>
+
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>My Orders</h1>
+      <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><a id="dashLink" href="customer-dashboard.html">Account</a><span>›</span><span>Orders</span></div>
+    </div>
+  </div>
+
+  <div class="orders-page">
+    <div class="container">
+      <div class="orders-header">
+        <h2 class="orders-title">Order History</h2>
+        <a href="menu.html" class="btn btn-primary btn-sm">+ New Order</a>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="orders-filter-bar">
+        <div class="status-tabs">
+          <button class="status-tab active" data-filter="all" onclick="filterOrders('all', this)">All Orders</button>
+          <button class="status-tab" data-filter="completed"
+            onclick="filterOrders('completed', this)">Completed</button>
+          <button class="status-tab" data-filter="active" onclick="filterOrders('active', this)">Active</button>
+          <button class="status-tab" data-filter="cancelled"
+            onclick="filterOrders('cancelled', this)">Cancelled</button>
+        </div>
+        <div class="search-wrapper" style="min-width:200px;">
+          <span class="search-icon"><i class="fas fa-magnifying-glass"></i></span>
+          <input type="text" class="search-input" id="orderSearch" placeholder="Search orders..."
+            oninput="searchOrders(this.value)">
+        </div>
+      </div>
+
+      <!-- Orders List -->
+      <div id="ordersList"></div>
+    </div>
+  </div>
+
+  <footer style="background:#1a0a00;color:#f5ead6;padding:40px 0 24px;">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+        <div class="nav-logo">
+          <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+          <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan
+              Cafe</span></div>
+        </div>
+        <div style="display:flex;gap:16px;"><a href="index.html"
+            style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Home</a><a href="menu.html"
+            style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Menu</a></div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.06);
+        padding-top:20px;
+        text-align:center;color:rgba(245,234,214,0.3);
+        font-size:0.8rem;">
+        © 2026 Brew & Bean Artisan Cafe. All rights reserved.</div>
+    </div>
+  </footer>
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  const trackLabels = ['Placed', 'Confirmed', 'Preparing', 'Ready', 'Delivered'];
+
+  function statusBadge(status) {
+    const map   = { completed: 'badge-success', pending: 'badge-info', preparing: 'badge-info', cancelled: 'badge-danger' };
+    const icons = { completed: '<i class="fas fa-circle-check"></i>', pending: '<i class="fas fa-rotate"></i>', preparing: '<i class="fas fa-rotate"></i>', cancelled: '<i class="fas fa-circle-xmark"></i>' };
+    return `<span class="badge ${map[status] || 'badge-muted'}">${icons[status] || ''} ${status}</span>`;
+  }
+
+  function getTrackStep(status) {
+    const steps = { pending: 1, preparing: 2, completed: 4, cancelled: 0 };
+    return steps[status] || 0;
+  }
+
+  function renderOrders(list) {
+    const el = document.getElementById('ordersList');
+    if (!list.length) {
+      el.innerHTML = `<div class="empty-orders">
+        <div class="empty-orders-icon"><i class="fas fa-receipt"></i></div>
+        <h3 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:8px;">No orders found</h3>
+        <p style="color:var(--brown);margin-bottom:24px;"><a href="menu.html" style="color:var(--caramel)">Browse the menu</a> to place your first order.</p>
+      </div>`;
+      return;
+    }
+
+    el.innerHTML = list.map((o, i) => {
+      const items = Array.isArray(o.items) ? o.items : JSON.parse(o.items || '[]');
+      const trackStep = getTrackStep(o.status);
+      const isActive = o.status === 'pending' || o.status === 'preparing';
+      const orderJSON = JSON.stringify(o).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+
+      return `
+      <div class="order-card-full" style="animation-delay:${i * 0.07}s" data-status="${o.status}">
+        <div class="ocf-header">
+          <div>
+            <div class="ocf-id">${o.order_no}</div>
+            <div class="ocf-date">${new Date(o.created_at).toLocaleString()}</div>
+          </div>
+          ${statusBadge(o.status)}
+        </div>
+
+        ${isActive ? `
+        <div class="track-steps">
+          ${trackLabels.map((l, ti) => `
+            <div class="track-step">
+              <div class="track-dot ${ti < trackStep ? 'done' : ti === trackStep ? 'active' : ''}">${ti < trackStep ? '<i class="fas fa-check"></i>' : ti + 1}</div>
+              <span class="track-label">${l}</span>
+            </div>
+            ${ti < trackLabels.length - 1 ? `<div class="track-line ${ti < trackStep - 1 ? 'done' : ''}"></div>` : ''}
+          `).join('')}
+        </div>` : ''}
+
+        <div class="ocf-items">
+          ${items.map(item => `
+            <div class="ocf-item-chip">
+              <div class="ocf-chip-img">${
+                (item.image || item.img)
+                  ? `<img src="${item.image || item.img}" alt="${item.name}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-mug-saucer\\'></i>'">`
+                  : '<i class="fas fa-mug-saucer"></i>'
+              }</div>
+              <div>
+                <div class="ocf-chip-name">${item.name}</div>
+                <div class="ocf-chip-qty">Qty: ${item.qty}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+
+        <div class="ocf-footer">
+          <span class="ocf-total">Rs. ${parseFloat(o.total).toLocaleString()}</span>
+          <div class="ocf-actions">
+            ${(user.role === 'admin' || user.role === 'staff') && o.status === 'pending' ? `
+              <button class="btn btn-primary btn-sm" onclick="updateStatus(${o.id}, 'preparing', this)"><i class="fas fa-rotate"></i> Mark Preparing</button>
+              <button class="btn btn-outline btn-sm" onclick="updateStatus(${o.id}, 'cancelled', this)"><i class="fas fa-circle-xmark"></i> Cancel</button>
+            ` : ''}
+            ${(user.role === 'admin' || user.role === 'staff') && o.status === 'preparing' ? `
+              <button class="btn btn-primary btn-sm" onclick="updateStatus(${o.id}, 'completed', this)"><i class="fas fa-circle-check"></i> Mark Completed</button>
+            ` : ''}
+            <button class="btn btn-outline btn-sm" onclick="showReceipt(allOrders.find(x => x.id === ${o.id}))"><i class="fas fa-receipt"></i> Receipt</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function updateStatus(orderId, newStatus, btn) {
+    btn.disabled = true;
+    btn.textContent = 'Updating...';
+    try {
+      const res = await fetch('api/update_order_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId, status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Status updated!', 'success', '<i class="fas fa-circle-check"></i>');
+        loadOrders();
+      } else {
+        showToast('Update failed', 'error', '<i class="fas fa-circle-xmark"></i>');
+        btn.disabled = false;
+      }
+    } catch (err) {
+      showToast('Server not connected.', 'error', '<i class="fas fa-triangle-exclamation"></i>');
+      btn.disabled = false;
+    }
+  }
+
+  function showReceipt(order) {
+    if (!order) return;
+    const items = Array.isArray(order.items) ? order.items : JSON.parse(order.items || '[]');
+    const itemsHTML = items.map(item => `
+      <tr>
+        <td style="padding:8px 0;border-bottom:1px solid #f0e6d3;">${item.name}</td>
+        <td style="padding:8px 0;border-bottom:1px solid #f0e6d3;text-align:center;">x${item.qty}</td>
+        <td style="padding:8px 0;border-bottom:1px solid #f0e6d3;text-align:right;">Rs. ${((item.price || 0) * item.qty).toLocaleString()}</td>
+      </tr>`).join('');
+
+    document.body.insertAdjacentHTML('beforeend', `
+      <div id="receiptOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:20px;padding:36px;max-width:420px;width:90%;max-height:80vh;overflow-y:auto;">
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:2.5rem;"><i class="fas fa-mug-saucer"></i></div>
+            <h2 style="font-family:var(--font-display);color:#3d1c02;margin:8px 0 4px;">Brew & Bean</h2>
+            <p style="color:#888;font-size:0.82rem;">Artisan Cafe · DHA Phase 5, Lahore</p>
+            <p style="color:#888;font-size:0.78rem;">${new Date(order.created_at).toLocaleString()}</p>
+          </div>
+          <div style="border-top:2px dashed #f0e6d3;border-bottom:2px dashed #f0e6d3;padding:16px 0;margin-bottom:16px;">
+            <p style="font-size:0.82rem;color:#888;margin-bottom:4px;">Order No.</p>
+            <p style="font-weight:700;color:#c07c3a;">${order.order_no}</p>
+          </div>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+            <thead>
+              <tr style="font-size:0.78rem;color:#888;">
+                <th style="text-align:left;padding-bottom:8px;">Item</th>
+                <th style="text-align:center;padding-bottom:8px;">Qty</th>
+                <th style="text-align:right;padding-bottom:8px;">Price</th>
+              </tr>
+            </thead>
+            <tbody>${itemsHTML}</tbody>
+          </table>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#888;"><span>Subtotal</span><span>Rs. ${parseFloat(order.subtotal || 0).toLocaleString()}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#888;"><span>Delivery</span><span>Rs. ${parseFloat(order.delivery || 0).toLocaleString()}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#888;"><span>GST (5%)</span><span>Rs. ${parseFloat(order.tax || 0).toLocaleString()}</span></div>
+            <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1rem;border-top:1px solid #f0e6d3;padding-top:10px;margin-top:4px;">
+              <span>Total</span><span style="color:#c07c3a;">Rs. ${parseFloat(order.total || 0).toLocaleString()}</span>
+            </div>
+          </div>
+          <div style="text-align:center;margin-bottom:16px;">
+            <span style="background:#f0fdf4;color:#166534;padding:6px 16px;border-radius:20px;font-size:0.82rem;font-weight:600;"><i class="fas fa-circle-check"></i> ${order.status.toUpperCase()}</span>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="window.print()" style="flex:1;padding:12px;background:#c07c3a;color:white;border:none;border-radius:10px;font-weight:600;cursor:pointer;"><i class="fas fa-print"></i> Print</button>
+            <button onclick="document.getElementById('receiptOverlay').remove()" style="flex:1;padding:12px;background:#f0e6d3;color:#3d1c02;border:none;border-radius:10px;font-weight:600;cursor:pointer;">Close</button>
+          </div>
+        </div>
+      </div>`);
+  }
+
+  let allOrders = [];
+  let currentFilter = 'all';
+  let currentSearch = '';
+  const user = JSON.parse(sessionStorage.getItem('bb_user') || '{}');
+
+  async function loadOrders() {
+    const url = (user.role === 'admin' || user.role === 'staff') ? 'api/get_orders.php' : `api/get_orders.php?user_id=${user.id}`;
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        allOrders = data.orders;
+        applyFilters();
+      }
+    } catch (err) {
+      console.error('Could not load orders', err);
+    }
+  }
+
+  function filterOrders(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    applyFilters();
+  }
+
+  function searchOrders(q) {
+    currentSearch = q.toLowerCase();
+    applyFilters();
+  }
+
+  function applyFilters() {
+    let filtered = allOrders;
+    if (currentFilter === 'active') filtered = filtered.filter(o => o.status === 'pending' || o.status === 'preparing');
+    else if (currentFilter !== 'all') filtered = filtered.filter(o => o.status === currentFilter);
+    if (currentSearch) filtered = filtered.filter(o => o.order_no.toLowerCase().includes(currentSearch));
+    renderOrders(filtered);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const u = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    const navAuthBtn = document.getElementById('navAuthBtn');
+    const dashLink = document.getElementById('dashLink');
+    if (u) {
+      const dashUrl = u.role === 'admin' ? 'admin-dashboard.html' : u.role === 'staff' ? 'staff-dashboard.html' : 'customer-dashboard.html';
+      navAuthBtn.innerHTML = `<a href="${dashUrl}" class="btn btn-primary btn-sm"><i class="fas fa-user"></i> ${u.name.split(' ')[0]}</a>`;
+      if (dashLink) dashLink.href = dashUrl;
+    } else {
+      navAuthBtn.innerHTML = `<div id="navAuthBtn"></div>`;
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', loadOrders);
+</script>   <script>
+  // ===== NAVBAR AUTH =====
+  (function() {
+    const u = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    const btn = document.getElementById('navAuthBtn');
+    if (!btn) return;
+    if (u) {
+      const dashUrl = u.role === 'admin' ? 'admin-dashboard.html' : u.role === 'staff' ? 'staff-dashboard.html' : 'customer-dashboard.html';
+      btn.innerHTML = `<a href="${dashUrl}" class="btn btn-primary btn-sm"><i class="fas fa-user"></i> ${u.name.split(' ')[0]}</a>`;
+    } else {
+      btn.innerHTML = `<div id="navAuthBtn"></div>`;
+    }
+  })();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserve a Table — Brew & Bean</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .reservation-page { background:var(--cream); padding:56px 0 90px; flex:1; }
+    [data-theme="dark"] .reservation-page { background:var(--warm-white); }
+    .reservation-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+    .reservation-info { position:sticky; top:100px; }
+    .reservation-hero { border-radius:20px; overflow:hidden; margin-bottom:24px; box-shadow:var(--shadow-md); }
+    .reservation-hero img { width:100%; height:300px; object-fit:cover; display:block; }
+    .res-info-title { font-family:var(--font-display); font-size:1.6rem; font-weight:700; margin-bottom:12px; }
+    .res-info-desc { font-family:var(--font-accent); font-size:1rem; color:var(--brown); line-height:1.7; margin-bottom:24px; }
+    [data-theme="dark"] .res-info-desc { color:var(--latte); }
+    .res-perks { display:flex; flex-direction:column; gap:12px; }
+    .res-perk { display:flex; align-items:center; gap:12px; }
+    .res-perk-icon { width:38px; height:38px; border-radius:10px; background:rgba(192,124,58,0.1); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .res-perk-text strong { display:block; font-size:0.87rem; color:var(--espresso); margin-bottom:2px; }
+    [data-theme="dark"] .res-perk-text strong { color:var(--cream); }
+    .res-perk-text span { font-size:0.78rem; color:var(--brown); }
+    [data-theme="dark"] .res-perk-text span { color:var(--latte); }
+    .res-form-card { background:var(--foam); border-radius:24px; padding:36px; box-shadow:var(--shadow-md); }
+    [data-theme="dark"] .res-form-card { background:var(--roast); }
+    .res-form-title { font-family:var(--font-display); font-size:1.4rem; font-weight:700; margin-bottom:4px; }
+    .res-form-sub { font-size:0.85rem; color:var(--brown); margin-bottom:28px; }
+    [data-theme="dark"] .res-form-sub { color:var(--latte); }
+    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .guest-selector { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+    .guest-btn { padding:9px 18px; border-radius:10px; border:2px solid rgba(192,124,58,0.2); background:var(--cream); color:var(--brown); font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:var(--font-body); }
+    [data-theme="dark"] .guest-btn { background:var(--latte); color:var(--cream); }
+    .guest-btn.selected { background:var(--caramel); color:white; border-color:var(--caramel); }
+    .time-slots { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:6px; }
+    .time-slot { padding:10px 6px; border-radius:10px; border:2px solid rgba(192,124,58,0.15); background:var(--cream); color:var(--brown); font-size:0.82rem; font-weight:600; cursor:pointer; text-align:center; transition:all 0.2s; font-family:var(--font-body); }
+    [data-theme="dark"] .time-slot { background:var(--latte); color:var(--cream); }
+    .time-slot.selected { background:var(--caramel); color:white; border-color:var(--caramel); }
+    .time-slot.unavailable { opacity:0.35; cursor:not-allowed; background:var(--cream); }
+    .occasion-options { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; }
+    .occasion-card { padding:12px; border-radius:12px; border:2px solid rgba(192,124,58,0.15); cursor:pointer; text-align:center; transition:all 0.2s; font-family:var(--font-body); background:var(--cream); }
+    [data-theme="dark"] .occasion-card { background:var(--latte); }
+    .occasion-card.selected { border-color:var(--caramel); background:rgba(192,124,58,0.08); }
+    .occasion-icon { font-size:1.5rem; margin-bottom:4px; }
+    .occasion-label { font-size:0.78rem; font-weight:600; color:var(--charcoal); }
+    [data-theme="dark"] .occasion-label { color:var(--cream); }
+    .my-res-section { margin-top:56px; }
+    .my-res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+    .res-card { background:var(--foam); border-radius:18px; padding:22px; box-shadow:var(--shadow-sm); border:1px solid rgba(192,124,58,0.08); transition:all 0.25s; }
+    [data-theme="dark"] .res-card { background:var(--roast); }
+    .res-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); }
+    .res-card-header { display:flex; justify-content:space-between; margin-bottom:14px; }
+    .res-card-id { font-weight:700; color:var(--caramel); font-size:0.9rem; }
+    .res-card-date { font-size:1.1rem; font-family:var(--font-display); font-weight:700; margin-bottom:4px; }
+    .res-card-time { font-size:0.85rem; color:var(--brown); }
+    [data-theme="dark"] .res-card-time { color:var(--latte); }
+    .res-card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid rgba(192,124,58,0.1); }
+    .res-card-guests { font-size:0.83rem; font-weight:600; color:var(--espresso); }
+    [data-theme="dark"] .res-card-guests { color:var(--cream); }
+    footer { margin-top:auto; }
+  </style>
+</head>
+<body>
+<div id="pageLoader"><div class="loader-cup"><i class="fas fa-mug-saucer"></i></div><div class="loader-bar"><div class="loader-fill"></div></div><div class="loader-text">PREPARING YOUR TABLE</div></div>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="reservation.html" class="nav-link active">Reserve</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+        <div id="navAuthBtn"></div>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="menu.html" class="nav-link">Menu</a>
+  <a href="reservation.html" class="nav-link">Reserve</a>
+  <a href="contact.html" class="nav-link">Contact</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>Reserve a Table</h1>
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Reservations</span></div>
+  </div>
+</div>
+
+<section class="reservation-page">
+  <div class="container">
+    <div class="reservation-grid">
+      <div class="reservation-info reveal">
+        <div class="reservation-hero">
+          <img src="assets/cafe-interior.jpg" alt="Cafe interior">
+        </div>
+        <h2 class="res-info-title">A Table Worth Waiting For</h2>
+        <p class="res-info-desc">Book your spot at Brew & Bean and enjoy an uninterrupted experience crafted just for you — from your first sip to the last crumb.</p>
+        <div class="res-perks">
+          <div class="res-perk"><div class="res-perk-icon"><i class="fas fa-calendar-days"></i></div><div class="res-perk-text"><strong>Instant Confirmation</strong><span>Receive booking confirmation via email & SMS</span></div></div>
+          <div class="res-perk"><div class="res-perk-icon"><i class="fas fa-cake-candles"></i></div><div class="res-perk-text"><strong>Special Occasions</strong><span>Tell us — we'll make it memorable</span></div></div>
+          <div class="res-perk"><div class="res-perk-icon"><i class="fas fa-mug-saucer"></i></div><div class="res-perk-text"><strong>Complimentary Welcome</strong><span>Enjoy a complimentary house coffee on arrival</span></div></div>
+          <div class="res-perk"><div class="res-perk-icon"><i class="fas fa-rotate"></i></div><div class="res-perk-text"><strong>Free Cancellation</strong><span>Cancel or reschedule up to 2 hours before</span></div></div>
+        </div>
+      </div>
+
+      <div class="reveal delay-2">
+        <div class="res-form-card">
+          <h3 class="res-form-title">Book Your Table</h3>
+          <p class="res-form-sub">Fill in your details — we'll hold your table for 15 minutes.</p>
+          <form id="reservationForm" novalidate>
+            <div class="form-row-2">
+              <div class="form-group"><label class="form-label">First Name *</label><input type="text" class="form-input" placeholder="Ali"></div>
+              <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input" placeholder="Hassan"></div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group"><label class="form-label">Phone *</label><input type="tel" class="form-input" placeholder="+92 300 0000000"></div>
+              <div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" placeholder="you@email.com"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date *</label>
+              <input type="date" class="form-input" id="resDate" min="">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Number of Guests</label>
+              <div class="guest-selector" id="guestSelector">
+                <button type="button" class="guest-btn selected" data-guests="1" onclick="selectGuest(this)">1</button>
+                <button type="button" class="guest-btn" data-guests="2" onclick="selectGuest(this)">2</button>
+                <button type="button" class="guest-btn" data-guests="3" onclick="selectGuest(this)">3</button>
+                <button type="button" class="guest-btn" data-guests="4" onclick="selectGuest(this)">4</button>
+                <button type="button" class="guest-btn" data-guests="5" onclick="selectGuest(this)">5</button>
+                <button type="button" class="guest-btn" data-guests="6" onclick="selectGuest(this)">6+</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Time</label>
+              <div class="time-slots" id="timeSlots">
+                <button type="button" class="time-slot unavailable" disabled>7:00 AM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">8:00 AM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">9:00 AM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">10:00 AM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">12:00 PM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">1:00 PM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">2:00 PM</button>
+                <button type="button" class="time-slot unavailable" disabled>4:00 PM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">5:00 PM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">6:00 PM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">7:00 PM</button>
+                <button type="button" class="time-slot" onclick="selectTime(this)">8:00 PM</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Occasion (optional)</label>
+              <div class="occasion-options">
+                <div class="occasion-card" onclick="selectOccasion(this)"><div class="occasion-icon"><i class="fas fa-mug-saucer"></i></div><div class="occasion-label">Regular Visit</div></div>
+                <div class="occasion-card" onclick="selectOccasion(this)"><div class="occasion-icon"><i class="fas fa-cake-candles"></i></div><div class="occasion-label">Birthday</div></div>
+                <div class="occasion-card" onclick="selectOccasion(this)"><div class="occasion-icon"><i class="fas fa-briefcase"></i></div><div class="occasion-label">Business Meeting</div></div>
+                <div class="occasion-card" onclick="selectOccasion(this)"><div class="occasion-icon"><i class="fas fa-ring"></i></div><div class="occasion-label">Anniversary</div></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Special Requests</label>
+              <textarea class="form-textarea" rows="3" placeholder="Dietary needs, seating preferences, birthday arrangements..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-full" style="justify-content:center;padding:16px;font-size:1rem;"><i class="fas fa-calendar-days"></i> Confirm Reservation</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Reservations -->
+    <div class="my-res-section reveal">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div>
+          <div class="section-label" id="resLabel">Your Bookings</div>
+          <h2 class="section-title" id="resTitle" style="margin-bottom:0;">My Reservations</h2>
+        </div>
+      </div>
+      <div class="my-res-grid" id="myReservationsGrid">
+        <p style="color:var(--brown);font-size:0.85rem;">Loading your reservations...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#1a0a00;color:#f5ead6;padding:40px 0 24px;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+      <div class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <a href="index.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Home</a>
+        <a href="menu.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Menu</a>
+        <a href="contact.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Contact</a>
+      </div>
+      <p style="color:rgba(245,234,214,0.4);font-size:0.82rem;"><i class="fas fa-location-dot"></i> DHA Phase 5, Lahore · <i class="fas fa-phone"></i> +92 300 1234567</p>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;text-align:center;color:rgba(245,234,214,0.3);font-size:0.8rem;">© 2026 Brew & Bean Artisan Cafe. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  // ===== NAVBAR AUTH =====
+  (function() {
+    const u = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    const navAuthBtn = document.getElementById('navAuthBtn');
+    if (u) {
+      const dashUrl = u.role === 'admin' ? 'admin-dashboard.html' : u.role === 'staff' ? 'staff-dashboard.html' : 'customer-dashboard.html';
+      navAuthBtn.innerHTML = `<a href="${dashUrl}" class="btn btn-primary btn-sm"><i class="fas fa-user"></i> ${u.name.split(' ')[0]}</a>`;
+      if (u.role === 'admin' || u.role === 'staff') {
+        // Staff/Admin ko form nahi dikhana — sirf reservations list
+        document.querySelector('.reservation-grid').style.display = 'none';
+        document.querySelector('.my-res-section').style.marginTop = '0';
+        document.querySelector('.my-res-section').style.paddingTop = '40px';
+        document.getElementById('resLabel').textContent = 'All Bookings';
+        document.getElementById('resTitle').textContent = u.role === 'admin' ? 'All Reservations' : 'All Reservations';
+        // Page header bhi update karo
+        const ph = document.querySelector('.page-header h1');
+        if (ph) ph.textContent = 'Manage Reservations';
+      }
+    } else {
+      navAuthBtn.innerHTML = `<div id="navAuthBtn"></div>`;
+    }
+  })();
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('resDate').setAttribute('min', today);
+  document.getElementById('resDate').value = today;
+
+  let selectedGuests = 1;
+  let selectedTime = '';
+  let selectedOccasion = '';
+
+  function selectGuest(btn) {
+    document.querySelectorAll('.guest-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedGuests = btn.dataset.guests;
+  }
+
+  function selectTime(btn) {
+    document.querySelectorAll('.time-slot:not(.unavailable)').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedTime = btn.textContent;
+  }
+
+  function selectOccasion(card) {
+    document.querySelectorAll('.occasion-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedOccasion = card.querySelector('.occasion-label').textContent;
+  }
+
+  function loadMyReservations() {
+    const user = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    const grid = document.getElementById('myReservationsGrid');
+    if (!user) {
+      grid.innerHTML = '<p style="color:var(--brown);font-size:0.85rem;">Please <a href="login.html">sign in</a> to view your reservations.</p>';
+      return;
+    }
+    const url = (user.role === 'admin' || user.role === 'staff') ? 'api/get_reservations.php' : 'api/get_reservations.php?user_id=' + user.id;
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success || data.reservations.length === 0) {
+          grid.innerHTML = '<p style="color:var(--brown);font-size:0.85rem;">No reservations yet.</p>';
+          return;
+        }
+        const statusColors = { confirmed:'badge-success', pending:'badge-warning', cancelled:'badge-danger' };
+        grid.innerHTML = data.reservations.map(r => {
+          const date = new Date(r.date).toLocaleDateString('en-PK', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+          const badgeClass = statusColors[r.status] || 'badge-muted';
+          return `
+            <div class="res-card">
+              <div class="res-card-header">
+                <span class="res-card-id">#RES-${String(r.id).padStart(3,'0')}</span>
+                <span class="badge ${badgeClass}">${r.status}</span>
+              </div>
+              ${(user.role === 'admin' || user.role === 'staff') ? `<div style="font-weight:600;margin-bottom:4px;"><i class="fas fa-user"></i> ${r.name}</div>` : ''}
+              <div class="res-card-date">${date}</div>
+              <div class="res-card-time">${r.time} · ${r.occasion || 'Regular Visit'}</div>
+              <div class="res-card-footer">
+                <span class="res-card-guests"><i class="fas fa-users"></i> ${r.guests} Guests</span>
+                ${(user.role === 'admin' || user.role === 'staff') ? `
+                  <div style="display:flex;gap:6px;">
+                    ${r.status !== 'confirmed' ? `<button class="btn btn-sm" style="background:#38a169;color:white;padding:6px 12px;border-radius:8px;" onclick="updateResStatus(${r.id},'confirmed',this)">✓ Confirm</button>` : ''}
+                    ${r.status !== 'cancelled' ? `<button class="btn btn-sm" style="background:#e53e3e;color:white;padding:6px 12px;border-radius:8px;" onclick="updateResStatus(${r.id},'cancelled',this)">✗ Cancel</button>` : ''}
+                  </div>
+                ` : r.status === 'confirmed' ? `<button class="btn btn-outline btn-sm" onclick="cancelReservation(${r.id}, this)">Cancel</button>` : `<span class="badge badge-muted">${r.status}</span>`}
+              </div>
+            </div>`;
+        }).join('');
+      })
+      .catch(() => {
+        grid.innerHTML = '<p style="color:var(--brown);font-size:0.85rem;">Could not load reservations.</p>';
+      });
+  }
+
+  document.getElementById('reservationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!selectedTime) { showToast('Please select a time slot', 'error', '<i class="fas fa-clock"></i>'); return; }
+    const inputs = this.querySelectorAll('.form-input');
+    const name  = inputs[0].value.trim() + ' ' + inputs[1].value.trim();
+    const phone = inputs[2].value.trim();
+    const email = inputs[3].value.trim();
+    const date  = document.getElementById('resDate').value;
+    const notes = this.querySelector('.form-textarea')?.value.trim() || '';
+    const user  = JSON.parse(sessionStorage.getItem('bb_user') || '{}');
+    if (!name.trim() || name.trim().length < 2) { showToast('Please enter your name', 'error', '<i class="fas fa-triangle-exclamation"></i>'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email', 'error', '<i class="fas fa-triangle-exclamation"></i>'); return; }
+    try {
+      showToast('Sending reservation...', 'info', '<i class="fas fa-spinner fa-spin"></i>');
+      const res = await fetch('api/reservation.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id || null, name: name.trim(), email, phone, guests: selectedGuests, date, time: selectedTime, occasion: selectedOccasion, notes })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`<i class="fas fa-champagne-glasses"></i> ${data.res_id} confirmed! See you at ${selectedTime}`, 'success', '<i class="fas fa-calendar-days"></i>', 5000);
+        this.reset();
+        document.querySelectorAll('.guest-btn, .time-slot, .occasion-card').forEach(el => el.classList.remove('selected'));
+        document.querySelector('.guest-btn[data-guests="1"]')?.classList.add('selected');
+        selectedGuests = 1; selectedTime = ''; selectedOccasion = '';
+        loadMyReservations();
+      } else {
+        showToast(data.message, 'error', '<i class="fas fa-circle-xmark"></i>');
+      }
+    } catch (err) {
+      showToast('Server not connected.', 'error', '<i class="fas fa-triangle-exclamation"></i>');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', loadMyReservations);
+</script>
+</body>
+</html>

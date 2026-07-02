@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — Brew & Bean Admin</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/dashboard.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    .msg-row-msg { max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .msg-view-btn {
+      background: rgba(192,124,58,0.1); border: 1px solid var(--dash-border);
+      color: var(--dash-accent); padding: 6px 12px; border-radius: 8px;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .msg-view-btn:hover { background: var(--dash-accent); color: #fff; }
+
+    .msg-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(10,5,2,0.6);
+      z-index: 10000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .msg-modal-overlay.active { display: flex; }
+    .msg-modal {
+      background: var(--dash-card); border-radius: 16px; width: 100%; max-width: 540px;
+      box-shadow: var(--shadow-hover); overflow: hidden; animation: msgModalIn 0.2s ease;
+    }
+    @keyframes msgModalIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .msg-modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--dash-border);
+    }
+    .msg-modal-subject { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--dash-text); margin-bottom: 4px; }
+    .msg-modal-meta { font-size: 0.82rem; color: var(--dash-muted); }
+    .msg-modal-close {
+      background: var(--dash-bg); border: none; width: 32px; height: 32px; border-radius: 50%;
+      color: var(--dash-muted); cursor: pointer; flex-shrink: 0; transition: var(--transition);
+    }
+    .msg-modal-close:hover { background: var(--dash-danger); color: #fff; }
+    .msg-modal-body {
+      padding: 24px; font-size: 0.92rem; line-height: 1.7; color: var(--dash-text);
+      max-height: 50vh; overflow-y: auto; white-space: pre-wrap;
+    }
+    .msg-modal-footer { padding: 16px 24px; border-top: 1px solid var(--dash-border); text-align: right; }
+  </style>
+</head>
+<body class="dashboard-body">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <div class="sidebar-logo-icon"><i class="fas fa-mug-saucer"></i></div>
+    <div class="sidebar-logo-text">
+      <span class="sidebar-logo-name">Brew & Bean</span>
+      <span class="sidebar-logo-sub">Admin Panel</span>
+    </div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="admin-dashboard.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-chart-column"></i></div><span class="sidebar-link-text">Dashboard</span>
+    </a>
+    <a href="orders.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-receipt"></i></div><span class="sidebar-link-text">Orders</span>
+    </a>
+    <a href="menu.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-mug-saucer"></i></div><span class="sidebar-link-text">Menu Items</span>
+    </a>
+    <a href="reservation.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-calendar-days"></i></div><span class="sidebar-link-text">Reservations</span>
+    </a>
+    <div class="sidebar-section-label">Management</div>
+    <a href="staff-dashboard.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-id-badge"></i></div><span class="sidebar-link-text">Staff</span>
+    </a>
+    <a href="customers.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-users"></i></div><span class="sidebar-link-text">Customers</span>
+    </a>
+    <a href="messages.html" class="sidebar-link active">
+      <div class="sidebar-icon"><i class="fas fa-envelope"></i></div><span class="sidebar-link-text">Messages</span>
+    </a>
+    <a href="revenue.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-sack-dollar"></i></div><span class="sidebar-link-text">Revenue</span>
+    </a>
+    <div class="sidebar-section-label">Settings</div>
+    <a href="profile.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-gear"></i></div><span class="sidebar-link-text">Settings</span>
+    </a>
+    <a onclick="logout()" class="sidebar-link" style="cursor:pointer;">
+      <div class="sidebar-icon"><i class="fas fa-door-open"></i></div><span class="sidebar-link-text">Sign Out</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profile.html" class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatarWrap"></div>
+      <div class="sidebar-user-info">
+        <span class="sidebar-user-name" id="sidebarUserName">...</span>
+        <span class="sidebar-user-role">Super Admin</span>
+      </div>
+    </a>
+    <button class="sidebar-collapse-btn" id="collapseBtn">
+      <span class="sidebar-collapse-icon">◀</span>
+      <span class="sidebar-collapse-text">Collapse</span>
+    </button>
+  </div>
+</aside>
+
+<main class="dash-main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+      <div>
+        <div class="topbar-title">Contact Messages</div>
+        <div class="topbar-breadcrumb">Home › Admin › Messages</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn dash-theme-toggle"><i class="fas fa-moon"></i></button>
+      <div class="topbar-profile">
+        <div class="topbar-profile-avatar" id="topbarAvatarWrap"></div>
+        <span class="topbar-profile-name" id="topbarUserName">...</span>
+      </div>
+      <button onclick="logout()" style="margin-left:12px;background:rgba(229,62,62,0.1);border:1px solid rgba(229,62,62,0.3);color:#e53e3e;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;"><i class="fas fa-door-open"></i> Logout</button>
+    </div>
+  </header>
+
+  <div class="dash-content">
+    <div class="dash-page-title">Contact Messages</div>
+    <div class="dash-page-subtitle">Messages submitted via the Contact Us form</div>
+
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">All Messages</div>
+        <span class="badge badge-accent" id="msgCount">0 messages</span>
+      </div>
+      <div class="dash-card-body" style="padding:0;">
+        <div class="dash-table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="messagesTbody">
+              <tr><td colspan="7" style="text-align:center;color:var(--dash-muted);padding:20px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ===== MESSAGE VIEW MODAL ===== -->
+<div class="msg-modal-overlay" id="msgModalOverlay">
+  <div class="msg-modal">
+    <div class="msg-modal-header">
+      <div>
+        <div class="msg-modal-subject" id="modalSubject">—</div>
+        <div class="msg-modal-meta" id="modalMeta">—</div>
+      </div>
+      <button class="msg-modal-close" id="msgModalClose"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="msg-modal-body" id="modalBody">—</div>
+    <div class="msg-modal-footer">
+      <a href="#" id="modalReplyBtn" style="background:var(--dash-accent);color:#fff;padding:9px 18px;border-radius:8px;font-size:0.85rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-reply"></i> Reply via Email</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  (function() {
+    const raw = sessionStorage.getItem('bb_user');
+    if (!raw) { window.location.replace('login.html'); return; }
+    const user = JSON.parse(raw);
+    if (user.role !== 'admin') { window.location.replace('login.html'); return; }
+
+    function getInitials(name) {
+      return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    }
+    function avatarHTML(name) {
+      return `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#c07c3a,#c4521a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;">${getInitials(name)}</div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('sidebarUserName').textContent = user.name;
+      document.getElementById('topbarUserName').textContent = user.name;
+      document.getElementById('sidebarAvatarWrap').innerHTML = avatarHTML(user.name);
+      document.getElementById('topbarAvatarWrap').innerHTML = avatarHTML(user.name);
+
+      fetch('api/get_messages.php')
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) return;
+          const msgs = data.messages;
+          window.allMessages = msgs;
+          document.getElementById('msgCount').textContent = msgs.length + ' messages';
+
+          const tbody = document.getElementById('messagesTbody');
+          if (!msgs.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--dash-muted);padding:20px;">No messages yet</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = msgs.map((m, i) => `
+            <tr>
+              <td style="color:var(--dash-muted)">${i + 1}</td>
+              <td style="font-weight:600">${m.name}</td>
+              <td class="text-muted">${m.email}</td>
+              <td class="text-muted">${m.subject || '—'}</td>
+              <td class="text-sm msg-row-msg">${m.message}</td>
+              <td class="text-muted text-xs">${new Date(m.created_at).toLocaleDateString('en-PK', {day:'numeric', month:'short', year:'numeric'})}</td>
+              <td><button class="msg-view-btn" onclick="viewMessage(${i})"><i class="fas fa-eye"></i> View</button></td>
+            </tr>`).join('');
+        });
+    });
+
+    // ===== MESSAGE MODAL =====
+    window.viewMessage = function(index) {
+      const m = window.allMessages[index];
+      if (!m) return;
+      document.getElementById('modalSubject').textContent = m.subject || 'General Inquiry';
+      const dateStr = new Date(m.created_at).toLocaleString('en-PK', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+      document.getElementById('modalMeta').textContent = `${m.name} · ${m.email} · ${dateStr}`;
+      document.getElementById('modalBody').textContent = m.message;
+
+      const replyBtn = document.getElementById('modalReplyBtn');
+      const mailtoLink = `mailto:${m.email}?subject=${encodeURIComponent('Re: ' + (m.subject || 'Your message to Brew & Bean'))}`;
+      replyBtn.href = mailtoLink;
+      replyBtn.onclick = function() {
+        // Copy email to clipboard as a fallback — mailto only works if an email app
+        // (Outlook, Mail, etc.) is set as the system default, which isn't always the case.
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(m.email).then(() => {
+            if (typeof dashToast === 'function') {
+              dashToast('Email Copied', `${m.email} copied to clipboard. Opening your email app...`, '<i class="fas fa-circle-check"></i>');
+            }
+          }).catch(() => {});
+        }
+        // let the mailto: navigation proceed as normal
+      };
+
+      document.getElementById('msgModalOverlay').classList.add('active');
+    };
+
+    function closeMsgModal() {
+      document.getElementById('msgModalOverlay').classList.remove('active');
+    }
+    document.getElementById('msgModalClose').addEventListener('click', closeMsgModal);
+    document.getElementById('msgModalOverlay').addEventListener('click', (e) => {
+      if (e.target.id === 'msgModalOverlay') closeMsgModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMsgModal();
+    });
+  })();
+
+  function logout() {
+    sessionStorage.removeItem('bb_user');
+    localStorage.removeItem('bb_cart');
+    window.location.href = 'login.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

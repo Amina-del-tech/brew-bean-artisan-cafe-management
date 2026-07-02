@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — Brew & Bean</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <style>
+    .auth-aside { background: linear-gradient(160deg, #c07c3a, #c4521a) !important; }
+    .toggle-pass {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; font-size: 0.82rem; font-weight: 600;
+      color: var(--caramel); user-select: none; letter-spacing: 0.03em;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text">
+          <span class="logo-name">Brew & Bean</span>
+          <span class="logo-tagline">Artisan Cafe</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="menu.html" class="nav-link">Menu</a>
+  <a href="about.html" class="nav-link">About</a>
+  <a href="contact.html" class="nav-link">Contact</a>
+</div>
+
+<div class="auth-page">
+  <div class="auth-bg-circle"></div>
+  <div class="auth-bg-circle"></div>
+  <div class="container">
+    <div class="auth-container">
+
+      <div class="auth-aside">
+        <div class="auth-aside-logo">
+          <div class="nav-logo">
+            <div class="logo-icon" style="background:rgba(255,255,255,0.2);"><i class="fas fa-mug-saucer"></i></div>
+            <div class="logo-text">
+              <span class="logo-name" style="color:white;">Brew & Bean</span>
+              <span class="logo-tagline" style="color:rgba(255,255,255,0.6);">Artisan Cafe</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 class="auth-aside-title">Join the Brew & Bean family.</h2>
+          <p class="auth-aside-desc">Create your free account and start earning points from your very first order.</p>
+          <div class="auth-features">
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-champagne-glasses"></i></div><span>50 bonus points on sign-up</span></div>
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-credit-card"></i></div><span>Member-exclusive discounts</span></div>
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-cake-candles"></i></div><span>Free drink on your birthday</span></div>
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-mobile-screen"></i></div><span>Mobile app access coming soon</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-main">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join thousands of coffee lovers in Lahore</p>
+        <form id="signupForm" class="auth-form" novalidate>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div>
+              <label class="form-label" for="signupFirst">First Name</label>
+              <input type="text" id="signupFirst" class="form-input" placeholder="Ali">
+            </div>
+            <div>
+              <label class="form-label" for="signupLast">Last Name</label>
+              <input type="text" id="signupLast" class="form-input" placeholder="Hassan">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signupEmail">Email Address</label>
+            <input type="email" id="signupEmail" class="form-input" placeholder="ali@email.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signupPhone">Phone (optional)</label>
+            <input type="tel" id="signupPhone" class="form-input" placeholder="+92 300 0000000">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signupPassword">Password</label>
+            <div style="position:relative;">
+              <input type="password" id="signupPassword" class="form-input" placeholder="Min 6 characters" autocomplete="new-password" style="padding-right:60px;">
+              <span class="toggle-pass" id="togglePass">Show</span>
+            </div>
+            <div id="passwordStrength" style="display:none;margin-top:8px;">
+              <div style="display:flex;gap:4px;margin-bottom:4px;">
+                <div class="strength-bar" id="bar1"></div><div class="strength-bar" id="bar2"></div>
+                <div class="strength-bar" id="bar3"></div><div class="strength-bar" id="bar4"></div>
+              </div>
+              <span style="font-size:0.75rem;color:#b8946a;" id="strengthLabel"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signupConfirm">Confirm Password</label>
+            <div style="position:relative;">
+              <input type="password" id="signupConfirm" class="form-input" placeholder="Repeat password" autocomplete="new-password" style="padding-right:60px;">
+              <span class="toggle-pass" id="toggleConfirm">Show</span>
+            </div>
+            <span class="form-error" id="confirmError"></span>
+          </div>
+          <div class="form-check" style="margin-bottom:16px;">
+            <input type="checkbox" id="agreeTerms">
+            <label for="agreeTerms">I agree to the <a href="#" style="color:#c07c3a;">Terms of Service</a> & <a href="#" style="color:#c07c3a;">Privacy Policy</a></label>
+          </div>
+          <button type="submit" class="btn btn-primary w-full" style="justify-content:center;padding:16px;">
+            <i class="fas fa-champagne-glasses"></i> Create My Free Account
+          </button>
+          <p class="auth-footer-text" style="margin-top:16px;">Already have an account? <a href="login.html">Sign in <i class="fas fa-arrow-right"></i></a></p>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script>
+  function makeToggle(btnId, inputId) {
+    document.getElementById(btnId).addEventListener('click', function() {
+      const i = document.getElementById(inputId);
+      i.type = i.type === 'password' ? 'text' : 'password';
+      this.textContent = i.type === 'password' ? 'Show' : 'Hide';
+    });
+  }
+  makeToggle('togglePass', 'signupPassword');
+  makeToggle('toggleConfirm', 'signupConfirm');
+
+  document.getElementById('signupPassword').addEventListener('input', function() {
+    const val = this.value;
+    const wrap = document.getElementById('passwordStrength');
+    wrap.style.display = val ? 'block' : 'none';
+    ['bar1','bar2','bar3','bar4'].forEach(id => document.getElementById(id).style.background = 'rgba(192,124,58,0.15)');
+    const lbl = document.getElementById('strengthLabel');
+    if (val.length >= 6)  { document.getElementById('bar1').style.background = '#e74c3c'; lbl.textContent = 'Weak'; }
+    if (val.length >= 8)  { document.getElementById('bar2').style.background = '#f39c12'; lbl.textContent = 'Fair'; }
+    if (val.length >= 10) { document.getElementById('bar3').style.background = '#2ecc71'; lbl.textContent = 'Good'; }
+    if (val.length >= 12) { document.getElementById('bar4').style.background = '#27ae60'; lbl.textContent = 'Strong'; }
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const first = document.getElementById('signupFirst').value.trim();
+    const last  = document.getElementById('signupLast').value.trim();
+    const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('signupPassword').value;
+    const conf  = document.getElementById('signupConfirm').value;
+    const phone = document.getElementById('signupPhone').value.trim();
+    if (!first) { showToast('First name is required', 'error', '<i class="fas fa-circle-xmark"></i>'); return; }
+    if (!email) { showToast('Email is required', 'error', '<i class="fas fa-circle-xmark"></i>'); return; }
+    if (pass.length < 6) { showToast('Password must be at least 6 characters', 'error', '<i class="fas fa-circle-xmark"></i>'); return; }
+    if (pass !== conf) { const e = document.getElementById('confirmError'); e.textContent = 'Passwords do not match'; e.classList.add('show'); return; }
+    if (!document.getElementById('agreeTerms').checked) { showToast('Please agree to Terms of Service', 'error', '<i class="fas fa-triangle-exclamation"></i>'); return; }
+    try {
+      showToast('Creating account...', 'info', '<i class="fas fa-spinner fa-spin"></i>');
+      const res = await fetch('api/signup.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name: first + ' ' + last, email, password: pass, phone }) });
+      const data = await res.json();
+      if (data.success) {
+        // Save user to sessionStorage just like login
+        sessionStorage.setItem('bb_user', JSON.stringify({
+          id: data.user.id,
+          name: data.user.name || (first + ' ' + last),
+          email: email,
+          role: data.user.role || 'customer',
+          phone: phone || '',
+          loginTime: Date.now()
+        }));
+        showToast('Account created! Welcome to Brew & Bean!', 'success', '<i class="fas fa-champagne-glasses"></i>');
+        setTimeout(() => window.location.href = 'index.html', 1500);
+      }
+      else { showToast(data.message, 'error', '<i class="fas fa-circle-xmark"></i>'); }
+    } catch { showToast('Server not connected. Is XAMPP running?', 'error', '<i class="fas fa-triangle-exclamation"></i>'); }
+  });
+</script>
+<script src="js/animations.js"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — Brew & Bean</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    .cart-layout { display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start; }
+    .cart-items-wrap { background:var(--foam); border-radius:20px; padding:28px; box-shadow:var(--shadow-sm); }
+    [data-theme="dark"] .cart-items-wrap { background:var(--roast); }
+    .cart-header-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid rgba(192,124,58,0.1); }
+    .cart-header-title { font-family:var(--font-display); font-size:1.4rem; font-weight:700; }
+    .cart-empty-state { display:none; flex-direction:column; align-items:center; justify-content:center; padding:80px 20px; text-align:center; }
+    .cart-empty-icon { font-size:5rem; opacity:0.3; margin-bottom:20px; }
+    .cart-empty-title { font-family:var(--font-display); font-size:1.5rem; margin-bottom:8px; color:var(--espresso); }
+    [data-theme="dark"] .cart-empty-title { color:var(--cream); }
+    .cart-empty-sub { color:var(--brown); font-size:0.9rem; margin-bottom:28px; }
+    .cart-item { display:grid; grid-template-columns:90px 1fr auto; gap:16px; align-items:center; padding:16px 0; border-bottom:1px solid rgba(192,124,58,0.08); animation:slideInItem 0.3s ease; }
+    @keyframes slideInItem { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    .cart-item:last-child { border-bottom:none; }
+    .cart-item-image { width:90px; height:90px; border-radius:14px; overflow:hidden; }
+    .cart-item-image img { width:100%; height:100%; object-fit:cover; }
+    .cart-item-category { font-size:0.72rem; font-weight:700; color:var(--caramel); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+    .cart-item-name { font-family:var(--font-display); font-size:1rem; font-weight:700; color:var(--espresso); margin-bottom:4px; }
+    [data-theme="dark"] .cart-item-name { color:var(--cream); }
+    .cart-item-unit-price { font-size:0.8rem; color:var(--brown); }
+    [data-theme="dark"] .cart-item-unit-price { color:var(--latte); }
+    .cart-item-controls { display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+    .qty-controls { display:flex; align-items:center; gap:8px; background:var(--cream); border-radius:50px; padding:5px; border:1px solid rgba(192,124,58,0.15); }
+    [data-theme="dark"] .qty-controls { background:var(--latte); }
+    .qty-btn { width:30px; height:30px; border-radius:50%; background:var(--caramel); color:white; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; line-height:1; }
+    .qty-btn:hover { background:var(--rust); transform:scale(1.1); }
+    .qty-num { font-weight:700; font-size:0.95rem; min-width:22px; text-align:center; }
+    .item-price { font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--caramel); }
+    .remove-item-btn { font-size:0.75rem; color:#e53e3e; font-weight:600; cursor:pointer; border:none; background:none; transition:all 0.2s; }
+    .remove-item-btn:hover { color:#c53030; }
+    /* Summary */
+    .cart-summary-sticky { position:sticky; top:calc(72px + 16px); background:var(--cream); border-radius:20px; padding:28px; box-shadow:var(--shadow-md); }
+    [data-theme="dark"] .cart-summary-sticky { background:var(--roast); }
+    .summary-title { font-family:var(--font-display); font-size:1.2rem; font-weight:700; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid rgba(192,124,58,0.1); }
+    .summary-lines { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+    .summary-line { display:flex; justify-content:space-between; font-size:0.88rem; color:var(--brown); }
+    [data-theme="dark"] .summary-line { color:var(--latte); }
+    .summary-line.total { font-weight:700; font-size:1.1rem; color:var(--espresso); padding-top:14px; border-top:2px solid rgba(192,124,58,0.15); margin-top:4px; }
+    [data-theme="dark"] .summary-line.total { color:var(--cream); }
+    .price-total { color:var(--caramel); font-family:var(--font-display); font-size:1.3rem; }
+    .promo-row { display:flex; gap:8px; margin-bottom:18px; }
+    .promo-input { flex:1; padding:11px 14px; border:2px solid rgba(192,124,58,0.15); border-radius:10px; font-size:0.85rem; background:var(--foam); color:var(--charcoal); outline:none; font-family:var(--font-body); transition:all 0.2s; }
+    [data-theme="dark"] .promo-input { background:var(--latte); color:var(--cream); }
+    .promo-input:focus { border-color:var(--caramel); }
+    .promo-apply { padding:11px 16px; background:var(--caramel); color:white; border-radius:10px; font-size:0.83rem; font-weight:600; cursor:pointer; border:none; font-family:var(--font-body); transition:all 0.2s; }
+    .promo-apply:hover { background:var(--rust); }
+    .checkout-cta { width:100%; padding:16px; background:var(--espresso); color:var(--cream); border-radius:14px; font-size:1rem; font-weight:600; text-align:center; cursor:pointer; border:none; font-family:var(--font-body); transition:all 0.25s; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; }
+    [data-theme="dark"] .checkout-cta { background:var(--caramel); }
+    .checkout-cta:hover { background:var(--roast); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .continue-link { text-align:center; font-size:0.82rem; color:var(--caramel); font-weight:600; display:block; text-decoration:none; }
+    .continue-link:hover { text-decoration:underline; }
+    .secure-badges { display:flex; justify-content:center; gap:12px; margin-top:14px; }
+    .secure-badge { font-size:0.72rem; color:var(--brown); display:flex; align-items:center; gap:4px; }
+    [data-theme="dark"] .secure-badge { color:var(--latte); }
+    /* Suggestions */
+    .suggestions-wrap { margin-top:36px; }
+    .suggestions-title { font-family:var(--font-display); font-size:1.2rem; margin-bottom:20px; }
+    .suggestions-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+    .suggestion-card { background:var(--foam); border-radius:14px; overflow:hidden; border:1px solid rgba(192,124,58,0.1); transition:all 0.25s; cursor:pointer; }
+    [data-theme="dark"] .suggestion-card { background:var(--roast); }
+    .suggestion-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); }
+    .suggestion-img { height:120px; overflow:hidden; }
+    .suggestion-img img { width:100%; height:100%; object-fit:cover; }
+    .suggestion-body { padding:12px 14px; }
+    .suggestion-name { font-family:var(--font-display); font-size:0.9rem; font-weight:700; margin-bottom:4px; }
+    .suggestion-price { font-size:0.82rem; color:var(--caramel); font-weight:600; }
+    .suggestion-add { width:100%; padding:8px; background:rgba(192,124,58,0.1); color:var(--caramel); border:none; border-radius:8px; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s; margin-top:8px; }
+    .suggestion-add:hover { background:var(--caramel); color:white; }
+  </style>
+</head>
+<body>
+<!-- Loader -->
+<div id="pageLoader"><div class="loader-cup"><i class="fas fa-mug-saucer"></i></div><div class="loader-bar"><div class="loader-fill"></div></div><div class="loader-text">LOADING YOUR CART</div></div>
+
+<!-- Navbar -->
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+        <div id="navAuthBtn"></div>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a><a href="menu.html" class="nav-link">Menu</a>
+  <a href="about.html" class="nav-link">About</a><a href="contact.html" class="nav-link">Contact</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>Your Cart</h1>
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Cart</span></div>
+  </div>
+</div>
+
+<section class="page-cream-section">
+  <div class="container">
+    <!-- Empty State -->
+    <div id="cartEmpty" class="cart-empty-state" style="display:none;">
+      <div class="cart-empty-icon"><i class="fas fa-cart-shopping"></i></div>
+      <h3 class="cart-empty-title">Your cart is empty</h3>
+      <p class="cart-empty-sub">Looks like you haven't added anything yet. Head to our menu and discover something delicious!</p>
+      <a href="menu.html" class="btn btn-primary">Browse Menu <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <!-- Full Cart -->
+    <div id="cartFull" class="cart-layout" style="display:none;">
+      <!-- Items -->
+      <div>
+        <div class="cart-items-wrap">
+          <div class="cart-header-row">
+            <h2 class="cart-header-title">Cart Items <span id="cartItemCount" style="font-size:0.9rem;color:var(--caramel);font-weight:500;"></span></h2>
+            <button onclick="Cart.clear(); renderCartPage(); showToast('Cart cleared','info','<i class='fas fa-trash'></i>');" class="clear-cart-btn" style="font-size:0.82rem;color:#e53e3e;font-weight:600;padding:7px 14px;border-radius:8px;background:rgba(229,62,62,0.08);cursor:pointer;border:none;">Clear All</button>
+          </div>
+          <div id="cartItemsContainer"></div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="suggestions-wrap reveal">
+          <h3 class="suggestions-title">You might also like</h3>
+          <div class="suggestions-grid" id="suggestionsGrid"></div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div>
+        <div class="cart-summary-sticky">
+          <h3 class="summary-title">Order Summary</h3>
+          <div class="summary-lines">
+            <div class="summary-line"><span>Subtotal</span><span id="summarySubtotal">Rs. 0</span></div>
+            <div class="summary-line"><span>Delivery</span><span id="summaryDelivery">Rs. 150</span></div>
+            <div class="summary-line"><span>GST (5%)</span><span id="summaryTax">Rs. 0</span></div>
+            <div class="summary-line"><span>Discount</span><span id="summaryDiscount">—</span></div>
+            <div class="summary-line total"><span>Total</span><span class="price-total" id="summaryTotal">Rs. 0</span></div>
+          </div>
+
+          <div class="promo-row">
+            <input type="text" class="promo-input" id="promoInput" placeholder="Promo code (try BREW20)">
+            <button class="promo-apply" onclick="applyPromo(document.getElementById('promoInput').value)">Apply</button>
+          </div>
+
+          <a href="checkout.html" class="checkout-cta"><i class="fas fa-cart-shopping"></i> Proceed to Checkout</a>
+          <a href="menu.html" class="continue-link"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
+
+          <div class="secure-badges">
+            <span class="secure-badge"><i class="fas fa-lock"></i> Secure</span>
+            <span class="secure-badge"><i class="fas fa-credit-card"></i> Easy Pay</span>
+            <span class="secure-badge"><i class="fas fa-rotate-left"></i> Free Returns</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#1a0a00;color:#f5ead6;padding:40px 0 24px;">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+      <div class="nav-logo"><div class="logo-icon"><i class="fas fa-mug-saucer"></i></div><div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div></div>
+      <div style="display:flex;gap:16px;">
+        <a href="index.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Home</a>
+        <a href="menu.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Menu</a>
+        <a href="contact.html" style="color:rgba(245,234,214,0.5);font-size:0.85rem;">Contact</a>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;text-align:center;color:rgba(245,234,214,0.3);font-size:0.8rem;">© 2026 Brew & Bean Artisan Cafe. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  // Suggestions data
+  const suggestions = [
+    { id:3, name:'Caramel Macchiato', price:520, category:'coffee', image:'assets/caramel-macchiato.jpg' },
+    { id:10, name:'Almond Croissant', price:320, category:'snacks', image:'assets/almond-butter-croissant.jpg' },
+    { id:14, name:'Tiramisu Jar', price:680, category:'desserts', image:'assets/tiramisu-jar.jpg' },
+    { id:6, name:'Reserve Cold Brew', price:560, category:'cold', image:'assets/reserve-cold-brew.jpg' },
+  ];
+
+  function renderSuggestions() {
+    const cartIds = Cart.getAll().map(i => i.id);
+    const grid = document.getElementById('suggestionsGrid');
+    if (!grid) return;
+    grid.innerHTML = suggestions.filter(s => !cartIds.includes(s.id)).slice(0,4).map(s => `
+      <div class="suggestion-card">
+        <div class="suggestion-img"><img src="${s.image}" alt="${s.name}" loading="lazy"></div>
+        <div class="suggestion-body">
+          <div class="suggestion-name">${s.name}</div>
+          <div class="suggestion-price">Rs. ${s.price.toLocaleString()}</div>
+          <button class="suggestion-add" onclick="Cart.add({id:${s.id},name:'${s.name}',price:${s.price},category:'${s.category}',image:'${s.image}'}); renderCartPage(); renderSuggestions(); showToast('${s.name} added!','success','<i class='fas fa-cart-shopping'></i>');">+ Add to Cart</button>
+        </div>
+      </div>`).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCartPage();
+    renderSuggestions();
+    // Show empty or full based on cart
+    const items = Cart.getAll();
+    if (!items.length) {
+      document.getElementById('cartEmpty').style.display = 'flex';
+      document.getElementById('cartFull').style.display = 'none';
+    } else {
+      document.getElementById('cartEmpty').style.display = 'none';
+      document.getElementById('cartFull').style.display = 'grid';
+    }
+  });
+</script>
+  <script>
+  // ===== NAVBAR AUTH =====
+  (function() {
+    const u = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    const btn = document.getElementById('navAuthBtn');
+    if (!btn) return;
+    if (u) {
+      const dashUrl = u.role === 'admin' ? 'admin-dashboard.html' : u.role === 'staff' ? 'staff-dashboard.html' : 'customer-dashboard.html';
+      btn.innerHTML = `<a href="${dashUrl}" class="btn btn-primary btn-sm"><i class="fas fa-user"></i> ${u.name.split(' ')[0]}</a>`;
+    } else {
+      btn.innerHTML = `<div id="navAuthBtn"></div>`;
+    }
+  })();
+  </script>
+</body>
+</html>

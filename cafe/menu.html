@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu — Brew & Bean</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+</head>
+<body>
+ 
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text">
+          <span class="logo-name">Brew & Bean</span>
+          <span class="logo-tagline">Artisan Cafe</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link active">Menu</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+        <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+        <div id="navAuthBtn"></div>
+      </div>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+ 
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="menu.html" class="nav-link">Menu</a>
+  <a href="about.html" class="nav-link">About</a>
+  <a href="contact.html" class="nav-link">Contact</a>
+  <a href="cart.html" class="nav-link">Cart <i class="fas fa-cart-shopping"></i></a>
+</div>
+ 
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>Our Menu</h1>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span>›</span>
+      <span>Menu</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== MENU CONTROLS ===== -->
+<div class="menu-controls">
+  <div class="container">
+    <div class="menu-controls-inner">
+      <div class="category-filters" id="categoryFilters">
+        <button class="filter-btn active" data-category="all">All Items</button>
+        <button class="filter-btn" data-category="coffee"><i class="fas fa-mug-saucer"></i> Coffee</button>
+        <button class="filter-btn" data-category="cold"><i class="fas fa-icicles"></i> Cold Drinks</button>
+        <button class="filter-btn" data-category="snacks"><i class="fas fa-bread-slice"></i> Snacks</button>
+        <button class="filter-btn" data-category="desserts"><i class="fas fa-cake-candles"></i> Desserts</button>
+        <button class="filter-btn" data-category="breakfast"><i class="fas fa-utensils"></i> Breakfast</button>
+      </div>
+      <div class="search-wrapper">
+        <span class="search-icon"><i class="fas fa-magnifying-glass"></i></span>
+        <input type="text" class="search-input" id="menuSearch" placeholder="Search menu...">
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== MENU GRID ===== -->
+<section class="menu-grid-section" id="menuSection">
+  <div class="container">
+    <div class="menu-grid" id="menuGrid">
+      <!-- Cards injected by JS -->
+    </div>
+    <div class="no-results" id="noResults">
+      <i class="far fa-face-frown"></i> No items found. Try a different search or category.
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo footer-brand" style="margin-bottom:12px;">
+          <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+          <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+        </div>
+        <p class="footer-tagline">Crafting moments, one cup at a time.</p>
+        <div class="social-links">
+          <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="social-link"><i class="fas fa-camera"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html" class="footer-link">Home</a></li>
+          <li><a href="menu.html" class="footer-link">Menu</a></li>
+          <li><a href="about.html" class="footer-link">About</a></li>
+          <li><a href="contact.html" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Hours</h4>
+        <ul class="footer-links">
+          <li><a class="footer-link">Mon–Fri: 7AM–10PM</a></li>
+          <li><a class="footer-link">Sat–Sun: 8AM–11PM</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Contact</h4>
+        <ul class="footer-links">
+          <li><a class="footer-link"><i class="fas fa-location-dot"></i> DHA Phase 5, Lahore</a></li>
+          <li><a class="footer-link"><i class="fas fa-phone"></i> +92 300 1234567</a></li>
+          <li><a class="footer-link"><i class="fas fa-envelope"></i> hello@brewandbean.pk</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Brew & Bean Artisan Cafe. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+ 
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script>
+// ==================== NAVBAR AUTH ====================
+(function() {
+  const u = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+  const navAuthBtn = document.getElementById('navAuthBtn');
+  if (u) {
+    const dashUrl = u.role === 'admin' ? 'admin-dashboard.html' : u.role === 'staff' ? 'staff-dashboard.html' : 'customer-dashboard.html';
+    navAuthBtn.innerHTML = `<a href="${dashUrl}" class="btn btn-primary btn-sm"><i class="fas fa-user"></i> ${u.name.split(' ')[0]}</a>`;
+  } else {
+    navAuthBtn.innerHTML = `<div id="navAuthBtn"></div>`;
+  }
+})();
+
+// ==================== MENU DATA ====================
+const menuItems = [
+  { id: 1,  name: 'Velvet Signature Latte',    category: 'coffee',    price: 480, desc: 'Double-shot espresso with steamed milk art, vanilla & cinnamon.',           image: 'assets/velvet-signature-latte.jpg',    badge: 'Best Seller' },
+  { id: 2,  name: 'Classic Americano',          category: 'coffee',    price: 320, desc: 'Rich, bold espresso diluted to perfection with hot water.',                  image: 'assets/classic-americano.jpg',         badge: null },
+  { id: 3,  name: 'Caramel Macchiato',          category: 'coffee',    price: 520, desc: 'Layers of vanilla syrup, milk foam, espresso & caramel drizzle.',            image: 'assets/caramel-macchiato.jpg',         badge: 'Fan Fav' },
+  { id: 4,  name: 'Flat White',                 category: 'coffee',    price: 400, desc: 'Two ristretto shots with velvety microfoam milk. Simple perfection.',        image: 'assets/flat-white.jpg',               badge: null },
+  { id: 5,  name: 'Matcha Latte',               category: 'coffee',    price: 560, desc: 'Ceremonial grade matcha whisked smooth with oat milk.',                      image: 'assets/matcha-latte.jpg',             badge: 'New' },
+  { id: 6,  name: 'Reserve Cold Brew',          category: 'cold',      price: 560, desc: '18-hour slow-steeped Colombian beans over pure ice.',                        image: 'assets/reserve-cold-brew.jpg',        badge: 'Popular' },
+  { id: 7,  name: 'Iced Caramel Cloud',         category: 'cold',      price: 620, desc: 'Cold espresso topped with caramel-infused cold foam.',                       image: 'assets/iced-caramel-cloud.jpg',       badge: null },
+  { id: 8,  name: 'Strawberry Frappe',          category: 'cold',      price: 540, desc: 'Blended strawberry, cream and espresso over crushed ice.',                   image: 'assets/strawberry-frappe.jpg',        badge: 'Summer Hit' },
+  { id: 9,  name: 'Mango Sunrise',              category: 'cold',      price: 480, desc: 'Fresh mango, passion fruit, and sparkling water — no coffee.',               image: 'assets/mango-sunrise.jpg',            badge: null },
+  { id: 10, name: 'Almond Butter Croissant',   category: 'snacks',    price: 320, desc: 'Flaky golden layers with fresh almond cream and honey glaze.',               image: 'assets/almond-butter-croissant.jpg',  badge: "Chef's Pick" },
+  { id: 11, name: 'Avocado Toast',             category: 'snacks',    price: 650, desc: 'Sourdough, smashed avocado, poached egg, chilli flakes.',                    image: 'assets/avocado-toast.jpg',            badge: null },
+  { id: 12, name: 'Cheese Panini',             category: 'snacks',    price: 490, desc: 'Grilled sourdough with mozzarella, sun-dried tomatoes, basil.',              image: 'assets/cheese-panini.jpg',            badge: null },
+  { id: 13, name: 'Chicken Club Wrap',         category: 'snacks',    price: 720, desc: 'Grilled chicken, greens, garlic aioli in a warm tortilla wrap.',             image: 'assets/chicken-club-wrap.jpg',        badge: null },
+  { id: 14, name: 'Tiramisu Jar',              category: 'desserts',  price: 680, desc: 'Classic Italian layers of mascarpone, espresso-soaked ladyfingers.',         image: 'assets/tiramisu-jar.jpg',             badge: 'Must Try' },
+  { id: 15, name: 'Salted Caramel Brownie',    category: 'desserts',  price: 380, desc: 'Dense, fudgy chocolate brownie with sea-salt caramel swirl.',                image: 'assets/salted-caramel-brownie.jpg',   badge: null },
+  { id: 16, name: 'Belgian Waffle',            category: 'desserts',  price: 650, desc: 'Crispy waffles with fresh berries, whipped cream and maple syrup.',          image: 'assets/belgian-waffle.jpg',           badge: null },
+  { id: 17, name: 'New York Cheesecake',       category: 'desserts',  price: 580, desc: 'Velvety cream cheese filling on a buttery graham cracker base.',             image: 'assets/cheesecake.jpg',               badge: 'Classic' },
+  { id: 18, name: 'Full English Breakfast',    category: 'breakfast', price: 980, desc: 'Eggs, sausage, beans, grilled tomato, mushrooms and toast.',                 image: 'assets/breakfast.jpg',                badge: null },
+  { id: 19, name: 'Eggs Benedict',             category: 'breakfast', price: 820, desc: 'Poached eggs on English muffins with silky hollandaise sauce.',              image: 'assets/eggs-benedict.jpg',            badge: 'Weekend Fav' },
+  { id: 20, name: 'Acai Bowl',                 category: 'breakfast', price: 750, desc: 'Blended acai base topped with granola, honey, and fresh fruit.',             image: 'assets/acai-bowl.jpg',                badge: 'Healthy' },
+];
+
+// ==================== FAVOURITES ====================
+let userFavourites = []; // item names that are favourited
+const currentUser = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+
+// Load favourites from DB if logged in
+function loadFavourites() {
+  if (!currentUser) return;
+  fetch('api/favourites.php?user_id=' + currentUser.id)
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        userFavourites = data.favourites.map(f => f.item_name);
+        renderMenu(); // re-render with correct heart states
+      }
+    })
+    .catch(() => {});
+}
+
+// Toggle favourite
+function toggleFavourite(itemName, itemPrice, itemImg, btn) {
+  if (!currentUser) {
+    alert('Please login to save favourites!');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  fetch('api/favourites.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id:    currentUser.id,
+      item_name:  itemName,
+      item_price: itemPrice,
+      item_img:   itemImg
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      if (data.action === 'added') {
+        userFavourites.push(itemName);
+        btn.innerHTML = '<i class="fas fa-heart"></i>';
+        btn.title = 'Remove from favourites';
+      } else {
+        userFavourites = userFavourites.filter(n => n !== itemName);
+        btn.innerHTML = '<i class="far fa-heart"></i>';
+        btn.title = 'Add to favourites';
+      }
+    }
+  })
+  .catch(() => alert('Could not update favourites. Please try again.'));
+}
+
+// ==================== RENDER MENU ====================
+let activeCategory = 'all';
+let searchQuery = '';
+ 
+function renderMenu() {
+  const grid = document.getElementById('menuGrid');
+  const noResults = document.getElementById('noResults');
+ 
+  const filtered = menuItems.filter(item => {
+    const catMatch = activeCategory === 'all' || item.category === activeCategory;
+    const searchMatch = item.name.toLowerCase().includes(searchQuery) ||
+                        item.desc.toLowerCase().includes(searchQuery) ||
+                        item.category.toLowerCase().includes(searchQuery);
+    return catMatch && searchMatch;
+  });
+ 
+  grid.innerHTML = '';
+ 
+  if (filtered.length === 0) {
+    noResults.style.display = 'block';
+    return;
+  }
+  noResults.style.display = 'none';
+ 
+  filtered.forEach((item, i) => {
+    const isFav = userFavourites.includes(item.name);
+    const card = document.createElement('div');
+    card.className = 'menu-card';
+    card.style.animationDelay = `${i * 0.05}s`;
+    card.innerHTML = `
+      <div class="menu-card-image" style="position:relative;">
+        <img src="${item.image}" alt="${item.name}" loading="lazy">
+        ${item.badge ? `<span class="card-badge">${item.badge}</span>` : ''}
+        <button class="fav-heart-btn" data-name="${item.name}" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}"
+          style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.85);border:none;border-radius:50%;width:34px;height:34px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+          ${isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}
+        </button>
+      </div>
+      <div class="menu-card-body">
+        <span class="menu-card-tag">${item.category}</span>
+        <h3 class="menu-card-name">${item.name}</h3>
+        <p class="menu-card-desc">${item.desc}</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">Rs. ${item.price.toLocaleString()}</span>
+          <button class="add-to-cart" data-id="${item.id}" onclick="addToCart(${item.id},'${item.name}',${item.price},'${item.category}','${item.image}')">
+            <span>+</span> Add to Cart
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Heart button click
+    card.querySelector('.fav-heart-btn').addEventListener('click', function() {
+      toggleFavourite(item.name, item.price, item.image, this);
+    });
+
+    grid.appendChild(card);
+  });
+}
+ 
+// ==================== FILTER BUTTONS ====================
+document.getElementById('categoryFilters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCategory = btn.dataset.category;
+  renderMenu();
+});
+ 
+// ==================== SEARCH ====================
+document.getElementById('menuSearch').addEventListener('input', e => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  renderMenu();
+});
+ 
+// Init
+renderMenu();
+loadFavourites(); // load from DB
+</script>
+</body>
+</html>

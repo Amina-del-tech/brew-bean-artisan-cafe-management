@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Brew & Bean</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <style>
+    /* Login/Signup shared: aside always caramel gradient */
+    .auth-aside { background: linear-gradient(160deg, #c07c3a, #c4521a) !important; }
+    .toggle-pass {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; font-size: 0.82rem; font-weight: 600;
+      color: var(--caramel); user-select: none; letter-spacing: 0.03em;
+    }
+
+  </style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text">
+          <span class="logo-name">Brew & Bean</span>
+          <span class="logo-tagline">Artisan Cafe</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="menu.html" class="nav-link">Menu</a>
+  <a href="about.html" class="nav-link">About</a>
+  <a href="contact.html" class="nav-link">Contact</a>
+</div>
+
+<div class="auth-page">
+  <div class="auth-bg-circle"></div>
+  <div class="auth-bg-circle"></div>
+  <div class="container">
+    <div class="auth-container">
+
+      <div class="auth-aside">
+        <div class="auth-aside-logo">
+          <div class="nav-logo">
+            <div class="logo-icon" style="background:rgba(255,255,255,0.2);"><i class="fas fa-mug-saucer"></i></div>
+            <div class="logo-text">
+              <span class="logo-name" style="color:white;">Brew & Bean</span>
+              <span class="logo-tagline" style="color:rgba(255,255,255,0.6);">Artisan Cafe</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 class="auth-aside-title">Your daily ritual starts here.</h2>
+          <p class="auth-aside-desc">Sign in to access your order history, saved favorites, and exclusive member rewards.</p>
+          <div class="auth-features">
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-gift"></i></div><span>Earn loyalty points on every order</span></div>
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-bolt"></i></div><span>Faster checkout with saved details</span></div>
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-bell"></i></div><span>Early access to new seasonal items</span></div>
+            <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-box"></i></div><span>Full order history & tracking</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-main">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Sign in to your Brew & Bean account</p>
+        <form id="loginForm" class="auth-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="you@email.com" autocomplete="email">
+            <span class="form-error"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <div style="position:relative;">
+              <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" autocomplete="current-password" style="padding-right:60px;">
+              <span class="toggle-pass" id="toggleLogin">Show</span>
+            </div>
+            <a href="forgot-password.html" class="forgot-link" style="color:#c07c3a;float:right;font-size:0.82rem;margin-top:6px;">Forgot password?</a>
+            <span class="form-error" id="passwordError"></span>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">Remember me for 30 days</label>
+          </div>
+          <button type="submit" class="btn btn-primary w-full" style="justify-content:center;padding:16px;">
+            Sign In to My Account
+          </button>
+
+          <p class="auth-footer-text">Don't have an account? <a href="signup.html">Create one free <i class="fas fa-arrow-right"></i></a></p>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script>
+  document.getElementById('toggleLogin').addEventListener('click', function() {
+    const i = document.getElementById('loginPassword');
+    i.type = i.type === 'password' ? 'text' : 'password';
+    this.textContent = i.type === 'password' ? 'Show' : 'Hide';
+  });
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('passwordError');
+    if (!email) { showToast('Email is required', 'error', '<i class="fas fa-circle-xmark"></i>'); return; }
+    if (!password) { errorEl.textContent = 'Password is required'; errorEl.classList.add('show'); return; }
+    errorEl.textContent = ''; errorEl.classList.remove('show');
+    if (document.getElementById('rememberMe').checked) localStorage.setItem('bb_remember', email);
+    else localStorage.removeItem('bb_remember');
+    try {
+      showToast('Logging in...', 'info', '<i class="fas fa-spinner fa-spin"></i>');
+      const res = await fetch('api/login.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('bb_user', JSON.stringify({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, phone: data.user.phone || '', loginTime: Date.now() }));
+        showToast('Login successful! Redirecting...', 'success', '<i class="fas fa-circle-check"></i>');
+        setTimeout(() => {
+          if (data.user.role === 'admin') window.location.href = 'admin-dashboard.html';
+          else if (data.user.role === 'staff') window.location.href = 'staff-dashboard.html';
+          else window.location.href = 'index.html';
+        }, 1000);
+      } else { showToast(data.message || 'Login failed', 'error', '<i class="fas fa-circle-xmark"></i>'); }
+    } catch { showToast('Could not connect to server', 'error', '<i class="fas fa-triangle-exclamation"></i>'); }
+  });
+</script>
+<script src="js/animations.js"></script>
+</body>
+</html>

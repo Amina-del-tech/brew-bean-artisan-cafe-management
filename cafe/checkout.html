@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Brew & Bean</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    .checkout-grid { display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:start; }
+    .checkout-section { background:var(--foam); border-radius:20px; padding:28px; box-shadow:var(--shadow-sm); margin-bottom:20px; }
+    [data-theme="dark"] .checkout-section { background:var(--roast); }
+    .checkout-section-title { font-family:var(--font-display); font-size:1.1rem; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+    .step-num { width:28px; height:28px; border-radius:50%; background:var(--caramel); color:white; font-size:0.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .payment-options { display:flex; flex-direction:column; gap:10px; }
+    .payment-option { display:flex; align-items:center; gap:14px; padding:16px; border:2px solid rgba(192,124,58,0.15); border-radius:14px; cursor:pointer; transition:all 0.2s; }
+    .payment-option.selected { border-color:var(--caramel); background:rgba(192,124,58,0.06); }
+    .payment-option:hover { border-color:rgba(192,124,58,0.35); }
+    .payment-option input[type="radio"] { accent-color:var(--caramel); width:18px; height:18px; flex-shrink:0; }
+    .payment-icon { font-size:1.4rem; }
+    .payment-label { font-weight:600; font-size:0.9rem; }
+    .payment-desc { font-size:0.78rem; color:var(--brown); margin-top:2px; }
+    [data-theme="dark"] .payment-desc { color:var(--latte); }
+    .card-fields { margin-top:14px; padding-top:14px; border-top:1px solid rgba(192,124,58,0.1); display:none; }
+    .card-fields.visible { display:block; }
+    .order-summary-panel { background:var(--cream); border-radius:20px; padding:28px; box-shadow:var(--shadow-md); position:sticky; top:88px; }
+    [data-theme="dark"] .order-summary-panel { background:var(--roast); }
+    .order-items-list { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+    .order-summary-item { display:flex; gap:12px; align-items:center; }
+    .order-summary-img { width:52px; height:52px; border-radius:10px; overflow:hidden; flex-shrink:0; }
+    .order-summary-img img { width:100%; height:100%; object-fit:cover; }
+    .order-summary-name { font-size:0.87rem; font-weight:600; }
+    .order-summary-qty { font-size:0.78rem; color:var(--brown); }
+    [data-theme="dark"] .order-summary-qty { color:var(--latte); }
+    .order-summary-price { font-weight:700; color:var(--caramel); margin-left:auto; font-size:0.9rem; }
+    .divider { border:none; border-top:1px solid rgba(192,124,58,0.1); margin:16px 0; }
+    .place-order-btn { width:100%; padding:18px; background:var(--caramel); color:white; border:none; border-radius:14px; font-size:1rem; font-weight:700; cursor:pointer; font-family:var(--font-body); transition:all 0.25s; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .place-order-btn:hover { background:var(--rust); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .place-order-btn:active { transform:translateY(0); }
+    .step-indicator { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:32px; }
+    .step-item { display:flex; align-items:center; gap:10px; }
+    .step-circle { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700; border:2px solid rgba(192,124,58,0.2); color:var(--brown); transition:all 0.3s; }
+    .step-circle.active { background:var(--caramel); color:white; border-color:var(--caramel); }
+    .step-circle.done { background:var(--caramel); color:white; border-color:var(--caramel); }
+    .step-label { font-size:0.8rem; font-weight:500; color:var(--brown); }
+    [data-theme="dark"] .step-label { color:var(--latte); }
+    .step-line { width:48px; height:2px; background:rgba(192,124,58,0.15); margin:0 8px; }
+    .step-line.done { background:var(--caramel); }
+  </style>
+</head>
+<body>
+<div id="pageLoader"><div class="loader-cup"><i class="fas fa-mug-saucer"></i></div><div class="loader-bar"><div class="loader-fill"></div></div><div class="loader-text">PREPARING CHECKOUT</div></div>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="cart.html" class="nav-link">Cart</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a><a href="menu.html" class="nav-link">Menu</a><a href="cart.html" class="nav-link">Cart</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>Checkout</h1>
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><a href="cart.html">Cart</a><span>›</span><span>Checkout</span></div>
+  </div>
+</div>
+
+<section class="page-cream-section">
+  <div class="container">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-item">
+        <div class="step-circle done"><i class="fas fa-check"></i></div>
+        <span class="step-label">Cart</span>
+      </div>
+      <div class="step-line done"></div>
+      <div class="step-item">
+        <div class="step-circle active">2</div>
+        <span class="step-label">Checkout</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <span class="step-label">Confirmation</span>
+      </div>
+    </div>
+
+    <div class="checkout-grid">
+      <!-- Left: Forms -->
+      <div>
+        <!-- Delivery Info -->
+        <div class="checkout-section reveal">
+          <div class="checkout-section-title"><span class="step-num">1</span> Delivery Information</div>
+          <div class="form-row-2">
+            <div class="form-group"><label class="form-label">First Name</label><input type="text" id="custFirstName" class="form-input" placeholder="Ali"></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input type="text" id="custLastName" class="form-input" placeholder="Hassan"></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label class="form-label">Phone</label><input type="tel" id="custPhone" class="form-input" placeholder="+92 300 0000000"></div>
+            <div class="form-group"><label class="form-label">Email</label><input type="email" id="custEmail" class="form-input" placeholder="you@email.com"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Delivery Address</label><input type="text" id="deliveryAddress" class="form-input" placeholder="House / Flat no., Street"></div>
+          <div class="form-row-2">
+            <div class="form-group"><label class="form-label">City</label><input type="text" id="deliveryCity" class="form-input" placeholder="Lahore"></div>
+            <div class="form-group"><label class="form-label">Postal Code</label><input type="text" id="deliveryPostal" class="form-input" placeholder="54000"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Order Type</label>
+            <select class="form-input" id="orderType">
+              <option>Delivery (25–35 min)</option>
+              <option>Pickup (10–15 min)</option>
+              <option>Dine-In</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Special Instructions (optional)</label><textarea class="form-textarea" id="orderInstructions" rows="2" placeholder="Extra shot, no sugar, etc."></textarea></div>
+        </div>
+
+        <!-- Payment -->
+        <div class="checkout-section reveal delay-1">
+          <div class="checkout-section-title"><span class="step-num">2</span> Payment Method</div>
+          <div class="payment-options">
+            <label class="payment-option selected" onclick="selectPayment('cash', this)">
+              <input type="radio" name="payment" value="cash" checked>
+              <span class="payment-icon"><i class="fas fa-money-bill"></i></span>
+              <div>
+                <div class="payment-label">Cash on Delivery</div>
+                <div class="payment-desc">Pay when your order arrives</div>
+              </div>
+            </label>
+            <label class="payment-option" onclick="selectPayment('card', this)">
+              <input type="radio" name="payment" value="card">
+              <span class="payment-icon"><i class="fas fa-credit-card"></i></span>
+              <div>
+                <div class="payment-label">Credit / Debit Card</div>
+                <div class="payment-desc">Visa, Mastercard, HBL, Meezan</div>
+              </div>
+            </label>
+            <div class="card-fields" id="cardFields">
+              <div class="form-group"><label class="form-label">Card Number</label><input type="text" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19"></div>
+              <div class="form-row-2">
+                <div class="form-group"><label class="form-label">Expiry</label><input type="text" class="form-input" placeholder="MM / YY" maxlength="7"></div>
+                <div class="form-group"><label class="form-label">CVV</label><input type="text" class="form-input" placeholder="•••" maxlength="3"></div>
+              </div>
+            </div>
+            <label class="payment-option" onclick="selectPayment('easypaisa', this)">
+              <input type="radio" name="payment" value="easypaisa">
+              <span class="payment-icon"><i class="fas fa-mobile-screen"></i></span>
+              <div>
+                <div class="payment-label">EasyPaisa / JazzCash</div>
+                <div class="payment-desc">Mobile wallet payment</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Summary -->
+      <div>
+        <div class="order-summary-panel">
+          <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(192,124,58,0.1);">Order Summary</h3>
+          <div class="order-items-list" id="checkoutItemsList"></div>
+          <hr class="divider">
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.87rem;color:var(--brown)"><span>Subtotal</span><span id="coSubtotal">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.87rem;color:var(--brown)"><span>Delivery</span><span id="coDelivery">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.87rem;color:var(--brown)"><span>GST (5%)</span><span id="coTax">—</span></div>
+          </div>
+          <hr class="divider">
+          <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;margin-bottom:20px;">
+            <span>Total</span><span style="color:var(--caramel);font-family:var(--font-display);font-size:1.25rem;" id="coTotal">—</span>
+          </div>
+          <button class="place-order-btn" onclick="placeOrder()"><i class="fas fa-circle-check"></i> Place Order</button>
+          <p style="text-align:center;font-size:0.75rem;color:var(--brown);margin-top:12px;"><i class="fas fa-lock"></i> Your payment info is secure & encrypted</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script>
+  function renderCheckoutItems() {
+    const items = Cart.getAll();
+    const list = document.getElementById('checkoutItemsList');
+    if (!list) return;
+    list.innerHTML = items.map(item => `
+      <div class="order-summary-item">
+        <div class="order-summary-img"><img src="${item.image}" alt="${item.name}" loading="lazy"></div>
+        <div style="flex:1">
+          <div class="order-summary-name">${item.name}</div>
+          <div class="order-summary-qty">Qty: ${item.qty}</div>
+        </div>
+        <div class="order-summary-price">Rs. ${(item.price*item.qty).toLocaleString()}</div>
+      </div>`).join('');
+
+    const sub   = Cart.getSubtotal();
+    const del   = sub > 2000 ? 0 : 150;
+    const tax   = Math.round(sub * 0.05);
+    const total = sub + del + tax;
+    document.getElementById('coSubtotal').textContent  = 'Rs. ' + sub.toLocaleString();
+    document.getElementById('coDelivery').textContent  = del === 0 ? 'Free' : 'Rs. ' + del;
+    document.getElementById('coTax').textContent       = 'Rs. ' + tax.toLocaleString();
+    document.getElementById('coTotal').textContent     = 'Rs. ' + total.toLocaleString();
+  }
+
+  async function placeOrder() {
+    const user    = JSON.parse(sessionStorage.getItem('bb_user') || '{}');
+    const items   = Cart.getAll();
+    const sub     = Cart.getSubtotal();
+    const del     = sub > 2000 ? 0 : 150;
+    const tax     = Math.round(sub * 0.05);
+    const total   = sub + del + tax;
+    const address = document.getElementById('deliveryAddress')?.value || '';
+    const city     = document.getElementById('deliveryCity')?.value || '';
+    const postal   = document.getElementById('deliveryPostal')?.value || '';
+    const orderType = document.getElementById('orderType')?.value || '';
+    const instructions = document.getElementById('orderInstructions')?.value || '';
+
+    let fullAddress = address;
+    if (city) fullAddress += ', ' + city;
+    if (postal) fullAddress += ' ' + postal;
+    if (orderType) fullAddress += ' — ' + orderType;
+    if (instructions) fullAddress += ' (Note: ' + instructions + ')';
+
+    try {
+      const res = await fetch('api/place_order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id:  user.id || null,
+          items, subtotal: sub,
+          delivery: del, tax, total, address: fullAddress
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        Cart.clear();
+        showOrderSuccess(data.order_no, 'Rs. ' + total.toLocaleString());
+      } else {
+        showToast('Order is not placed: ' + data.message, 'error', '<i class="fas fa-circle-xmark"></i>');
+      }
+
+    } catch (err) {
+      showToast('Server is not connected.', 'error', '<i class="fas fa-triangle-exclamation"></i>');
+      console.error(err);
+    }
+  }
+
+  function prefillCustomerInfo() {
+    const user = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    if (!user) return;
+    const nameParts = (user.name || '').trim().split(' ');
+    const first = nameParts[0] || '';
+    const last  = nameParts.slice(1).join(' ') || '';
+    if (document.getElementById('custFirstName')) document.getElementById('custFirstName').value = first;
+    if (document.getElementById('custLastName'))  document.getElementById('custLastName').value  = last;
+    if (document.getElementById('custEmail') && user.email) document.getElementById('custEmail').value = user.email;
+    if (document.getElementById('custPhone') && user.phone) document.getElementById('custPhone').value = user.phone;
+  }
+
+  document.addEventListener('DOMContentLoaded', renderCheckoutItems);
+  document.addEventListener('DOMContentLoaded', prefillCustomerInfo);
+</script>
+<script src="js/animations.js"></script>
+</body>
+</html>

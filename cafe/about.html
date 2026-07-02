@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var t = localStorage.getItem('bb_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Brew & Bean</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+</head>
+<body>
+ 
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+        <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="about.html" class="nav-link active">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <a href="cart.html" class="cart-btn"><i class="fas fa-cart-shopping"></i> Cart <span class="cart-count">0</span></a>
+        <div id="navAuthBtn"></div>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+ 
+<div class="mobile-nav">
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="menu.html" class="nav-link">Menu</a>
+  <a href="about.html" class="nav-link">About</a>
+  <a href="contact.html" class="nav-link">Contact</a>
+  <a href="cart.html" class="nav-link">Cart <i class="fas fa-cart-shopping"></i></a>
+</div>
+ 
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>Our Story</h1>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span>›</span><span>About</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== ABOUT STORY ===== -->
+<section class="about-story">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image-wrap reveal">
+        <div class="about-image-main">
+          <img src="assets/cafe-interior.jpg" alt="Cafe interior">
+        </div>
+        <div class="about-image-accent">
+          <img src="assets/coffee-beans.jpg" alt="Coffee beans">
+        </div>
+        <div class="about-year">Est. 2012</div>
+      </div>
+ 
+      <div class="about-content reveal delay-2">
+        <div class="section-label">Who We Are</div>
+        <h2 class="section-title">Born from a Love of Coffee</h2>
+ 
+        <p>
+          Brew & Bean began as a humble dream in a small DHA apartment — two friends with a 
+          commercial espresso machine, a sack of Ethiopian Yirgacheffe, and an unshakeable belief 
+          that Lahore deserved world-class coffee.
+        </p>
+        <p>
+          That apartment experiment became a pop-up. The pop-up became a cafe. Today, we serve 
+          over 500 cups daily to regulars who've made us part of their morning ritual — and we 
+          couldn't be more proud.
+        </p>
+        <p>
+          Every bean we source, every pastry we bake, every cup we craft carries that same original 
+          conviction: that the details matter, that quality has no shortcut, and that a great cup 
+          of coffee can genuinely make someone's day better.
+        </p>
+ 
+        <div class="about-values">
+          <div class="value-item">
+            <div class="value-icon"><i class="fas fa-seedling"></i></div>
+            <div class="value-text">
+              <strong>Sustainability</strong>
+              <span>Direct-trade sourcing & eco packaging</span>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon"><i class="fas fa-trophy"></i></div>
+            <div class="value-text">
+              <strong>Excellence</strong>
+              <span>SCA-certified barista team</span>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon"><i class="fas fa-heart"></i></div>
+            <div class="value-text">
+              <strong>Community</strong>
+              <span>A second home for our regulars</span>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="value-text">
+              <strong>Innovation</strong>
+              <span>Seasonal menus & experimental brews</span>
+            </div>
+          </div>
+        </div>
+ 
+        <a href="menu.html" class="btn btn-primary">Explore Our Menu <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== STATS ===== -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card reveal delay-1">
+        <span class="stat-icon"><i class="fas fa-mug-saucer"></i></span>
+        <span class="stat-number counter" data-target="500000" data-suffix="+">0</span>
+        <div class="stat-label">Cups Served</div>
+      </div>
+      <div class="stat-card reveal delay-2">
+        <span class="stat-icon"><i class="fas fa-star"></i></span>
+        <span class="stat-number counter" data-target="12000" data-suffix="+">0</span>
+        <div class="stat-label">5-Star Reviews</div>
+      </div>
+      <div class="stat-card reveal delay-3">
+        <span class="stat-icon"><i class="fas fa-earth-americas"></i></span>
+        <span class="stat-number counter" data-target="8" data-suffix="">0</span>
+        <div class="stat-label">Countries Sourced From</div>
+      </div>
+      <div class="stat-card reveal delay-4">
+        <span class="stat-icon"><i class="fas fa-users"></i></span>
+        <span class="stat-number counter" data-target="24" data-suffix="">0</span>
+        <div class="stat-label">Team Members</div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== TEAM ===== -->
+<section class="team-section">
+  <div class="container">
+    <div class="team-header reveal">
+      <div class="section-label">The People</div>
+      <h2 class="section-title">Meet Our Team</h2>
+      <p class="section-subtitle">Passionate, skilled, and obsessed with making your experience exceptional.</p>
+    </div>
+ 
+    <div class="team-grid">
+      <div class="team-card reveal delay-1">
+        <div class="team-image">
+          <img src="assets/ahmad.jpg" alt="Ahmad">
+        </div>
+        <div class="team-info">
+          <div class="team-name">Ahmad Raza</div>
+          <div class="team-role">Co-Founder & Head Roaster</div>
+        </div>
+      </div>
+ 
+      <div class="team-card reveal delay-2">
+        <div class="team-image">
+          <img src="assets/sana.jpg" alt="Sana">
+        </div>
+        <div class="team-info">
+          <div class="team-name">Sana Malik</div>
+          <div class="team-role">Co-Founder & Pastry Chef</div>
+        </div>
+      </div>
+ 
+      <div class="team-card reveal delay-3">
+        <div class="team-image">
+          <img src="assets/bilal.jpg" alt="Bilal">
+        </div>
+        <div class="team-info">
+          <div class="team-name">Bilal Chaudhry</div>
+          <div class="team-role">Lead Barista & Trainer</div>
+        </div>
+      </div>
+ 
+      <div class="team-card reveal delay-4">
+        <div class="team-image">
+          <img src="assets/ayesha.jpg" alt="Ayesha">
+        </div>
+        <div class="team-info">
+          <div class="team-name">Ayesha Tariq</div>
+          <div class="team-role">Cafe Manager</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== VALUES STRIP ===== -->
+<section class="values-strip" style="padding:60px 0;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;" class="reveal">
+      <div style="text-align:center;padding:32px 20px;border:1px solid rgba(192,124,58,0.15);border-radius:20px;">
+        <div style="font-size:2.5rem;margin-bottom:12px;"><i class="fas fa-leaf"></i></div>
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:8px;">Farm to Cup</h3>
+        <p style="font-size:0.85rem;color:var(--brown);line-height:1.6;">We trace every bean directly to its farm and farmer.</p>
+      </div>
+      <div style="text-align:center;padding:32px 20px;border:1px solid rgba(192,124,58,0.15);border-radius:20px;">
+        <div style="font-size:2.5rem;margin-bottom:12px;"><i class="fas fa-recycle"></i></div>
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:8px;">Zero Waste Goal</h3>
+        <p style="font-size:0.85rem;color:var(--brown);line-height:1.6;">Compostable packaging, used-ground fertilizer programs.</p>
+      </div>
+      <div style="text-align:center;padding:32px 20px;border:1px solid rgba(192,124,58,0.15);border-radius:20px;">
+        <div style="font-size:2.5rem;margin-bottom:12px;"><i class="fas fa-book"></i></div>
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:8px;">Coffee Education</h3>
+        <p style="font-size:0.85rem;color:var(--brown);line-height:1.6;">Monthly brew workshops open to the public. Free entry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo footer-brand" style="margin-bottom:12px;">
+          <div class="logo-icon"><i class="fas fa-mug-saucer"></i></div>
+          <div class="logo-text"><span class="logo-name">Brew & Bean</span><span class="logo-tagline">Artisan Cafe</span></div>
+        </div>
+        <p class="footer-tagline">Crafting moments, one cup at a time.</p>
+        <div class="social-links">
+          <a href="#" class="social-link"><i class="fab fa-facebook"></i></a><a href="#" class="social-link"><i class="fas fa-camera"></i></a><a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-title">Pages</h4>
+        <ul class="footer-links">
+          <li><a href="index.html" class="footer-link">Home</a></li>
+          <li><a href="menu.html" class="footer-link">Menu</a></li>
+          <li><a href="about.html" class="footer-link">About</a></li>
+          <li><a href="contact.html" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Hours</h4>
+        <ul class="footer-links">
+          <li><a class="footer-link">Mon–Fri: 7AM–10PM</a></li>
+          <li><a class="footer-link">Sat–Sun: 8AM–11PM</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Visit Us</h4>
+        <ul class="footer-links">
+          <li><a class="footer-link"><i class="fas fa-location-dot"></i> DHA Phase 5, Lahore</a></li>
+          <li><a class="footer-link"><i class="fas fa-phone"></i> +92 300 1234567</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Brew & Bean Artisan Cafe. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+ 
+<script src="js/cart.js"></script>
+<script src="js/script.js"></script>
+<script src="js/animations.js"></script>
+  <script>
+  // ===== NAVBAR AUTH =====
+  (function() {
+    const u = JSON.parse(sessionStorage.getItem('bb_user') || 'null');
+    const btn = document.getElementById('navAuthBtn');
+    if (!btn) return;
+    if (u) {
+      const dashUrl = u.role === 'admin' ? 'admin-dashboard.html' : u.role === 'staff' ? 'staff-dashboard.html' : 'customer-dashboard.html';
+      btn.innerHTML = `<a href="${dashUrl}" class="btn btn-primary btn-sm"><i class="fas fa-user"></i> ${u.name.split(' ')[0]}</a>`;
+    } else {
+      btn.innerHTML = `<div id="navAuthBtn"></div>`;
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Dashboard — Brew & Bean</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c07c3a' d='M4 3h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V3z'/%3E%3Cpath fill='%23c07c3a' d='M17 6h1.5a3 3 0 0 1 0 6H17V9.5h1.5a.5.5 0 0 0 0-1H17V6z'/%3E%3Crect x='3' y='18' width='15' height='2' rx='1' fill='%23c07c3a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/dashboard.css?v=7">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <style>
+    .task-item { display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid var(--dash-border); }
+    .task-item:last-child { border-bottom:none; }
+    .task-checkbox { width:20px; height:20px; border-radius:6px; border:2px solid var(--dash-border); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:var(--transition); }
+    .task-checkbox.done { background:var(--dash-success); border-color:var(--dash-success); color:white; font-size:0.75rem; }
+    .task-text { flex:1; font-size:0.87rem; color:var(--dash-text); }
+    .task-text.done { text-decoration:line-through; color:var(--dash-muted); }
+    .task-priority { font-size:0.7rem; font-weight:700; padding:3px 8px; border-radius:50px; }
+    .priority-high { background:rgba(229,62,62,0.1); color:var(--dash-danger); }
+    .priority-med  { background:rgba(212,168,67,0.1); color:var(--dash-warning); }
+    .priority-low  { background:rgba(45,158,107,0.1); color:var(--dash-success); }
+    .queue-item { display:grid; grid-template-columns:auto 1fr auto auto; gap:14px; align-items:center; padding:14px 18px; background:var(--dash-bg); border-radius:12px; margin-bottom:10px; border:1px solid var(--dash-border); transition:var(--transition); }
+    .queue-item:hover { border-color:rgba(192,124,58,0.3); }
+    .queue-num { width:36px; height:36px; border-radius:10px; background:var(--dash-accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem; }
+    .queue-items-text { font-size:0.84rem; color:var(--dash-text); }
+    .queue-time { font-size:0.78rem; color:var(--dash-muted); }
+    .timer-display { font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:700; color:var(--dash-accent); text-align:center; margin:12px 0; }
+    .timer-label { font-size:0.78rem; color:var(--dash-muted); text-align:center; letter-spacing:0.08em; text-transform:uppercase; }
+    .clock-in-btn { width:100%; padding:14px; border-radius:12px; font-size:0.95rem; font-weight:700; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; transition:var(--transition); margin-top:14px; }
+    .clock-in-btn.clocked-in { background:rgba(229,62,62,0.1); color:var(--dash-danger); border:2px solid rgba(229,62,62,0.2); }
+    .clock-in-btn.clocked-out { background:var(--dash-accent); color:white; box-shadow:0 4px 14px rgba(192,124,58,0.35); }
+    .perf-bar { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .perf-label { font-size:0.82rem; color:var(--dash-text); width:120px; flex-shrink:0; }
+    .perf-track { flex:1; height:8px; background:var(--dash-border); border-radius:4px; overflow:hidden; }
+    .perf-fill { height:100%; border-radius:4px; background:var(--dash-accent); transition:width 1.2s ease; }
+    .perf-val { font-size:0.8rem; font-weight:700; color:var(--dash-text); width:36px; text-align:right; }
+  </style>
+</head>
+<body class="dashboard-body">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <div class="sidebar-logo-icon"><i class="fas fa-mug-saucer"></i></div>
+    <div class="sidebar-logo-text">
+      <span class="sidebar-logo-name">Brew & Bean</span>
+      <span class="sidebar-logo-sub">Staff Panel</span>
+    </div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">My Shift</div>
+    <a href="staff-dashboard.html" class="sidebar-link active">
+      <div class="sidebar-icon"><i class="fas fa-chart-column"></i></div><span class="sidebar-link-text">Dashboard</span>
+    </a>
+    <a href="orders.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-receipt"></i></div><span class="sidebar-link-text">Order Queue</span>
+    </a>
+    <a href="reservation.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-calendar-days"></i></div><span class="sidebar-link-text">Reservations</span>
+    </a>
+    <a href="menu.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-mug-saucer"></i></div><span class="sidebar-link-text">Menu</span>
+    </a>
+    <div class="sidebar-section-label">Account</div>
+    <a href="profile.html" class="sidebar-link">
+      <div class="sidebar-icon"><i class="fas fa-user"></i></div><span class="sidebar-link-text">Profile</span>
+    </a>
+    <a onclick="logout()" class="sidebar-link" style="cursor:pointer;">
+      <div class="sidebar-icon"><i class="fas fa-door-open"></i></div><span class="sidebar-link-text">Sign Out</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profile.html" class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatarWrap"></div>
+      <div class="sidebar-user-info">
+        <span class="sidebar-user-name" id="sidebarUserName">...</span>
+        <span class="sidebar-user-role">Staff</span>
+      </div>
+    </a>
+    <button class="sidebar-collapse-btn" id="collapseBtn">
+      <span class="sidebar-collapse-icon">◀</span>
+      <span class="sidebar-collapse-text">Collapse</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="dash-main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+      <div>
+        <div class="topbar-title">Staff Dashboard</div>
+        <div class="topbar-breadcrumb">Shift: Morning (7:00 AM – 3:00 PM)</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn"><span><i class="fas fa-bell"></i></span><span class="topbar-notif-badge"></span></button>
+      <button class="topbar-btn dash-theme-toggle"><i class="fas fa-moon"></i></button>
+      <div class="topbar-profile">
+        <div class="topbar-profile-avatar" id="topbarAvatarWrap"></div>
+        <span class="topbar-profile-name" id="topbarUserName">...</span>
+        <span class="topbar-profile-chevron">▾</span>
+      </div>
+      <button onclick="logout()" style="margin-left:12px;background:rgba(229,62,62,0.1);border:1px solid rgba(229,62,62,0.3);color:#e53e3e;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;"><i class="fas fa-door-open"></i> Logout</button>
+    </div>
+  </header>
+
+  <div class="dash-content">
+    <div class="dash-page-title" id="welcomeTitle">Good morning</div>
+    <div class="dash-page-subtitle">Your shift started at 7:00 AM · On-duty time: <strong id="shiftTime">3h 22m</strong></div>
+
+    <!-- Stats -->
+    <div class="stat-cards-grid">
+      <div class="stat-card-d orange">
+        <div class="stat-card-header"><div class="stat-card-icon"><i class="fas fa-mug-saucer"></i></div><div class="stat-card-trend trend-up">Today</div></div>
+        <div class="stat-card-value" id="statOrdersHandled">0</div>
+        <div class="stat-card-label">Orders Handled</div>
+      </div>
+      <div class="stat-card-d green">
+        <div class="stat-card-header"><div class="stat-card-icon"><i class="fas fa-stopwatch"></i></div></div>
+        <div class="stat-card-value" id="statPrepTime">0<span style="font-size:1rem;font-weight:400"> orders</span></div>
+        <div class="stat-card-label">Total Completed</div>
+      </div>
+      <div class="stat-card-d blue">
+        <div class="stat-card-header"><div class="stat-card-icon"><i class="fas fa-rotate"></i></div></div>
+        <div class="stat-card-value" id="statPending">0</div>
+        <div class="stat-card-label">Pending Orders</div>
+      </div>
+      <div class="stat-card-d gold">
+        <div class="stat-card-header"><div class="stat-card-icon"><i class="fas fa-sack-dollar"></i></div></div>
+        <div class="stat-card-value" id="statRevenue">Rs. 0</div>
+        <div class="stat-card-label">Total Revenue</div>
+      </div>
+    </div>
+
+    <div class="dash-grid-31 mb-28">
+      <!-- Active Order Queue -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div><div class="dash-card-title">Active Order Queue</div><div class="dash-card-subtitle" id="activeOrderCount">Loading...</div></div>
+          <span class="badge badge-danger pulse-soft">● Live</span>
+        </div>
+        <div class="dash-card-body" id="orderQueueList">
+          <p style="color:var(--dash-muted);font-size:0.85rem;">Loading orders...</p>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Clock In/Out -->
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Shift Timer</div></div>
+          <div class="dash-card-body">
+            <div class="timer-label">Time on duty</div>
+            <div class="timer-display" id="shiftTimer">00:00:00</div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--dash-muted);margin-bottom:4px;">
+              <span id="clockInTime">Not clocked in</span>
+              <span id="clockOutTime"></span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="shiftProgress" style="width:0%;background:var(--dash-success)"></div></div>
+            <button class="clock-in-btn clocked-out" id="clockBtn" onclick="toggleClock()"><i class="fas fa-circle" style="color:#22c55e"></i> Clock In</button>
+          </div>
+        </div>
+
+        <!-- My Tasks -->
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Today's Tasks</div><span class="badge badge-accent" id="taskCount">Loading...</span></div>
+          <div class="dash-card-body" id="taskList">
+            <p style="color:var(--dash-muted);font-size:0.85rem;">Loading tasks...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance -->
+    <div class="dash-grid-2 mb-28">
+      <div class="dash-card">
+        <div class="dash-card-header"><div class="dash-card-title">My Performance</div><div class="dash-card-subtitle">This week vs target</div></div>
+        <div class="dash-card-body">
+          <div class="perf-bar"><span class="perf-label">Orders Completed</span><div class="perf-track"><div class="perf-fill" style="width:88%"></div></div><span class="perf-val">88%</span></div>
+          <div class="perf-bar"><span class="perf-label">Speed Score</span><div class="perf-track"><div class="perf-fill" style="width:92%;background:var(--dash-success)"></div></div><span class="perf-val">92%</span></div>
+          <div class="perf-bar"><span class="perf-label">Customer Rating</span><div class="perf-track"><div class="perf-fill" style="width:98%;background:var(--dash-warning)"></div></div><span class="perf-val">98%</span></div>
+          <div class="perf-bar"><span class="perf-label">Upsell Rate</span><div class="perf-track"><div class="perf-fill" style="width:71%"></div></div><span class="perf-val">71%</span></div>
+          <div class="perf-bar"><span class="perf-label">Attendance</span><div class="perf-track"><div class="perf-fill" style="width:100%;background:var(--dash-success)"></div></div><span class="perf-val">100%</span></div>
+        </div>
+      </div>
+
+      <!-- Today's Schedule -->
+      <div class="dash-card">
+        <div class="dash-card-header"><div class="dash-card-title">Upcoming Reservations</div><div class="dash-card-subtitle">Tables to prepare today</div></div>
+        <div class="dash-card-body" id="reservationsList">
+          <p style="color:var(--dash-muted);font-size:0.85rem;">Loading reservations...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/dashboard.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  // ===== AUTH GUARD + DYNAMIC DATA =====
+  (function() {
+    const raw = sessionStorage.getItem('bb_user');
+    if (!raw) { window.location.replace('login.html'); return; }
+    const user = JSON.parse(raw);
+    if (user.role !== 'staff' && user.role !== 'admin') { window.location.replace('login.html'); return; }
+
+    function getInitials(name) {
+      return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    }
+    function avatarHTML(name) {
+      return `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#c07c3a,#c4521a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;">${getInitials(name)}</div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set name & avatar
+      document.getElementById('sidebarUserName').textContent = user.name;
+      document.getElementById('topbarUserName').textContent = user.name;
+      document.getElementById('sidebarAvatarWrap').innerHTML = avatarHTML(user.name);
+      document.getElementById('topbarAvatarWrap').innerHTML = avatarHTML(user.name);
+
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('welcomeTitle').innerHTML = greeting + ', ' + user.name;
+
+      // Load real orders from DB
+      fetch('api/get_orders.php')
+        .then(r => r.json())
+        .then(data => {
+          const list = document.getElementById('orderQueueList');
+          const active = data.orders.filter(o => o.status === 'pending' || o.status === 'preparing');
+          const completed = data.orders.filter(o => o.status === 'completed');
+          const pending = data.orders.filter(o => o.status === 'pending');
+          const totalRevenue = data.orders.reduce((s, o) => s + parseFloat(o.total), 0);
+
+          // Update stats
+          document.getElementById('statOrdersHandled').textContent = data.orders.length;
+          document.getElementById('statPrepTime').innerHTML = completed.length + '<span style="font-size:1rem;font-weight:400"> orders</span>';
+          document.getElementById('statPending').textContent = pending.length;
+          document.getElementById('statRevenue').textContent = 'Rs. ' + totalRevenue.toLocaleString();
+          document.getElementById('activeOrderCount').textContent = active.length + ' orders in progress';
+          if (active.length === 0) {
+            list.innerHTML = '<p style="color:var(--dash-muted);font-size:0.85rem;">No active orders right now.</p>';
+            return;
+          }
+          const statusMap = { pending: 'badge-muted', preparing: 'badge-warning', completed: 'badge-success', cancelled: 'badge-danger' };
+          list.innerHTML = active.slice(0, 5).map((o, i) => {
+            const items = Array.isArray(o.items) ? o.items.map(it => it.name + ' × ' + it.qty).join(', ') : 'Items';
+            const btnText = o.status === 'preparing' ? 'Done <i class="fas fa-check"></i>' : 'Start';
+            return `<div class="queue-item" id="queue-${o.id}">
+              <div class="queue-num">${i + 1}</div>
+              <div>
+                <div class="queue-items-text">${items}</div>
+                <div class="queue-time">${o.order_no}</div>
+              </div>
+              <span class="badge ${statusMap[o.status]}">${o.status}</span>
+              <button class="btn-d btn-d-ghost btn-d-sm" onclick="handleOrder(${o.id}, '${o.status}', this)">${btnText}</button>
+            </div>`;
+          }).join('');
+        })
+        .catch(() => {
+          document.getElementById('orderQueueList').innerHTML = '<p style="color:var(--dash-muted);font-size:0.85rem;">Could not load orders.</p>';
+        });
+
+      // Load tasks from DB
+      fetch('api/tasks.php')
+        .then(r => r.json())
+        .then(data => {
+          const list = document.getElementById('taskList');
+          const badge = document.getElementById('taskCount');
+          if (!data.success || data.tasks.length === 0) {
+            list.innerHTML = '<p style="color:var(--dash-muted);font-size:0.85rem;">No tasks today.</p>';
+            return;
+          }
+
+          const done = data.tasks.filter(t => t.is_done == 1).length;
+          badge.textContent = `${done}/${data.tasks.length}`;
+
+          list.innerHTML = data.tasks.map(t => `
+            <div class="task-item" id="task-${t.id}">
+              <div class="task-checkbox ${t.is_done == 1 ? 'done' : ''}" onclick="toggleTask(${t.id}, this)">
+                ${t.is_done == 1 ? '<i class="fas fa-check"></i>' : ''}
+              </div>
+              <span class="task-text ${t.is_done == 1 ? 'done' : ''}">${t.title}</span>
+              <span class="task-priority priority-${t.priority}">${t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}</span>
+            </div>`).join('');
+        })
+        .catch(() => {
+          document.getElementById('taskList').innerHTML = '<p style="color:var(--dash-muted);font-size:0.85rem;">Could not load tasks.</p>';
+        });
+      fetch('api/get_reservations.php')
+        .then(r => r.json())
+        .then(data => {
+          const list = document.getElementById('reservationsList');
+          if (!data.success || data.reservations.length === 0) {
+            list.innerHTML = '<p style="color:var(--dash-muted);font-size:0.85rem;">No reservations today.</p>';
+            return;
+          }
+          list.innerHTML = data.reservations.slice(0, 4).map(r => `
+            <div class="activity-item">
+              <div class="activity-dot" style="background:rgba(192,124,58,0.15);font-size:0.8rem;"><i class="fas fa-calendar-days"></i></div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>${r.name}</strong> — ${r.guests} guests</div>
+                <div class="activity-time">${r.date} · ${r.time} · ${r.status}</div>
+              </div>
+            </div>`).join('');
+        })
+        .catch(() => {
+          document.getElementById('reservationsList').innerHTML = '<p style="color:var(--dash-muted);font-size:0.85rem;">Could not load reservations.</p>';
+        });
+    });
+  })();
+
+  function handleOrder(orderId, currentStatus, btn) {
+    const newStatus = currentStatus === 'pending' ? 'preparing' : 'completed';
+    fetch('api/update_order_status.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: orderId, status: newStatus })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        if (newStatus === 'completed') {
+          const row = document.getElementById('queue-' + orderId);
+          if (row) { row.style.opacity = '0.4'; row.style.transition = 'all 0.4s'; setTimeout(() => row.remove(), 400); }
+          dashToast('Order Completed', 'Removed from queue <i class="fas fa-circle-check"></i>', '<i class="fas fa-circle-check"></i>');
+        } else {
+          btn.innerHTML = 'Done <i class="fas fa-check"></i>';
+          const badge = btn.closest('.queue-item').querySelector('.badge');
+          if (badge) { badge.className = 'badge badge-warning'; badge.textContent = 'preparing'; }
+          dashToast('Order Started', 'Status updated to preparing', '<i class="fas fa-mug-saucer"></i>');
+        }
+      }
+    });
+  }
+
+  function logout() {
+    sessionStorage.removeItem('bb_user');
+    localStorage.removeItem('bb_cart');
+    window.location.href = 'login.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', initDashboard);
+  document.addEventListener('DOMContentLoaded', checkShift);
+
+  // ===== REAL SHIFT TIMER =====
+  let timerInterval = null;
+  let clockedIn = false;
+  let clockInTime = null;
+
+  function startTimer(fromTime) {
+    clockInTime = new Date(fromTime);
+    clockedIn = true;
+    const btn = document.getElementById('clockBtn');
+    btn.className = 'clock-in-btn clocked-in';
+    btn.innerHTML = '<i class="fas fa-circle" style="color:#ef4444"></i> Clock Out';
+    document.getElementById('clockInTime').textContent = 'Started: ' + clockInTime.toLocaleTimeString();
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      const diff = Math.floor((Date.now() - clockInTime.getTime()) / 1000);
+      const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+      const s = String(diff % 60).padStart(2, '0');
+      const el = document.getElementById('shiftTimer');
+      if (el) el.textContent = `${h}:${m}:${s}`;
+
+      // Progress bar (8 hour shift = 28800 seconds)
+      const pct = Math.min((diff / 28800) * 100, 100);
+      const bar = document.getElementById('shiftProgress');
+      if (bar) bar.style.width = pct + '%';
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clockedIn = false;
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    const btn = document.getElementById('clockBtn');
+    btn.className = 'clock-in-btn clocked-out';
+    btn.innerHTML = '<i class="fas fa-circle" style="color:#22c55e"></i> Clock In';
+    document.getElementById('clockInTime').textContent = 'Not clocked in';
+    document.getElementById('shiftTimer').textContent = '00:00:00';
+    document.getElementById('shiftProgress').style.width = '0%';
+  }
+
+  async function toggleClock() {
+    const user = JSON.parse(sessionStorage.getItem('bb_user') || '{}');
+    if (clockedIn) {
+      // Clock out
+      const res = await fetch('api/shifts.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'clock_out', user_id: user.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        stopTimer();
+        dashToast('Clocked Out', 'Shift ended. Good work!', '<i class="fas fa-circle-check"></i>');
+      }
+    } else {
+      // Clock in
+      const res = await fetch('api/shifts.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'clock_in', user_id: user.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        startTimer(data.clock_in);
+        dashToast('Clocked In', 'Your shift has started! <i class="fas fa-circle-check"></i>', '<i class="fas fa-circle-check"></i>');
+      } else {
+        dashToast('Already clocked in', data.message, '<i class="fas fa-triangle-exclamation"></i>');
+      }
+    }
+  }
+
+  // Check if already clocked in on page load
+  async function checkShift() {
+    const user = JSON.parse(sessionStorage.getItem('bb_user') || '{}');
+    if (!user.id) return;
+    const res = await fetch('api/shifts.php?user_id=' + user.id);
+    const data = await res.json();
+    if (data.success && data.shift) {
+      startTimer(data.shift.clock_in);
+    }
+  }
+
+  function toggleTask(taskId, el) {
+    fetch('api/tasks.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'toggle', task_id: taskId })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        const isDone = data.is_done == 1;
+        el.classList.toggle('done', isDone);
+        el.innerHTML = isDone ? '<i class="fas fa-check"></i>' : '';
+        const text = el.nextElementSibling;
+        text.classList.toggle('done', isDone);
+
+        // Update badge count
+        const total = document.querySelectorAll('.task-checkbox').length;
+        const done = document.querySelectorAll('.task-checkbox.done').length;
+        document.getElementById('taskCount').textContent = `${done}/${total}`;
+      }
+    });
+  }
+
+  function markDone(btn) {
+    const row = btn.closest('.queue-item');
+    row.style.opacity = '0.4';
+    row.style.transform = 'translateX(10px)';
+    row.style.transition = 'all 0.4s';
+    setTimeout(() => row.remove(), 400);
+    dashToast('Order Completed', 'Marked as done and removed from queue <i class="fas fa-circle-check"></i>', '<i class="fas fa-circle-check"></i>');
+  }
+</script>
+</body>
+</html>
